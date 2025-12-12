@@ -2,15 +2,15 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Mail, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
+import { Mail, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,13 +42,13 @@ export default function ForgotPasswordPage() {
         <div className="w-full max-w-md">
           <div className="glass-card p-8 text-center animate-fade-in">
             <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+              <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
             </div>
             <h1 className="text-2xl font-bold text-dark-900 dark:text-white mb-2">
-              Email đã được gửi!
+              Kiểm tra email của bạn
             </h1>
             <p className="text-dark-600 dark:text-dark-400 mb-6">
-              Vui lòng kiểm tra email để đặt lại mật khẩu.
+              Chúng tôi đã gửi link đặt lại mật khẩu đến <strong>{email}</strong>
             </p>
             <Link href="/login" className="btn-primary inline-block">
               Quay lại đăng nhập
@@ -77,6 +77,9 @@ export default function ForgotPasswordPage() {
 
         <div className="glass-card p-8">
           <div className="text-center mb-8">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-lg shadow-primary-500/30">
+              <Mail className="w-8 h-8 text-white" />
+            </div>
             <h1 className="text-2xl font-bold text-dark-900 dark:text-white">
               Quên mật khẩu?
             </h1>
@@ -104,7 +107,7 @@ export default function ForgotPasswordPage() {
             </div>
 
             {error && (
-              <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm">
+              <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm animate-fade-in">
                 {error}
               </div>
             )}
@@ -123,7 +126,7 @@ export default function ForgotPasswordPage() {
                   Đang gửi...
                 </span>
               ) : (
-                'Gửi link đặt lại mật khẩu'
+                'Gửi link đặt lại'
               )}
             </button>
           </form>
@@ -132,4 +135,3 @@ export default function ForgotPasswordPage() {
     </div>
   )
 }
-
