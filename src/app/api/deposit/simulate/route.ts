@@ -86,25 +86,32 @@ export async function POST(request: NextRequest) {
     }
 
     // Create transaction record
-    await supabase.from('transactions').insert({
-      user_id: user.id,
-      type: 'deposit',
-      amount: amount,
-      balance_before: currentBalance,
-      balance_after: newBalance,
-      description: 'Nạp tiền (Test)',
-      status: 'completed',
-      payment_method: 'test',
-    }).catch(e => console.log('Transaction insert error:', e))
+    try {
+      await supabase.from('transactions').insert({
+        user_id: user.id,
+        type: 'deposit',
+        amount: amount,
+        balance_before: currentBalance,
+        balance_after: newBalance,
+        description: 'Nạp tiền (Test)',
+        status: 'completed',
+        payment_method: 'test',
+      })
+    } catch (e) {
+      console.log('Transaction insert error:', e)
+    }
 
     // Update deposit request if exists
     if (payment_code) {
-      await supabase
-        .from('deposit_requests')
-        .update({ status: 'completed' })
-        .eq('payment_code', payment_code)
-        .eq('user_id', user.id)
-        .catch(e => console.log('Deposit request update error:', e))
+      try {
+        await supabase
+          .from('deposit_requests')
+          .update({ status: 'completed' })
+          .eq('payment_code', payment_code)
+          .eq('user_id', user.id)
+      } catch (e) {
+        console.log('Deposit request update error:', e)
+      }
     }
 
     return NextResponse.json({
