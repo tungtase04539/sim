@@ -46,13 +46,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
 
-  if (!mounted) {
-    return null
-  }
-
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+      <div className={mounted ? '' : 'opacity-0'}>
+        {children}
+      </div>
     </ThemeContext.Provider>
   )
 }
