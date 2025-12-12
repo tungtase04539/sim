@@ -7,14 +7,11 @@ import Image from 'next/image'
 
 const AMOUNTS = [50000, 100000, 200000, 500000, 1000000, 2000000]
 
-// Bank info - should be configured in env
-// VietQR Bank codes: https://api.vietqr.io/v2/banks
-const BANK_INFO = {
-  bankCode: 'MB', // Mã ngân hàng cho VietQR (MB, VCB, TCB, ACB, BIDV, VPB, TPB...)
-  bankName: 'MB Bank',
-  accountNumber: '0326868888', // Số tài khoản thật của bạn
-  accountName: 'NGUYEN VAN A', // Tên chủ tài khoản
-}
+// Bank info - read from environment variables
+const BANK_CODE = process.env.NEXT_PUBLIC_BANK_CODE || 'MB'
+const BANK_NAME = process.env.NEXT_PUBLIC_BANK_NAME || 'MB Bank'
+const BANK_ACCOUNT = process.env.NEXT_PUBLIC_BANK_ACCOUNT || '0326868888'
+const BANK_ACCOUNT_NAME = process.env.NEXT_PUBLIC_BANK_ACCOUNT_NAME || 'NGUYEN VAN A'
 
 export default function DepositPage() {
   const [amount, setAmount] = useState(100000)
@@ -116,7 +113,7 @@ export default function DepositPage() {
   }
 
   const transferContent = `${paymentCode}`
-  const qrUrl = `https://img.vietqr.io/image/${BANK_INFO.bankCode}-${BANK_INFO.accountNumber}-compact2.png?amount=${finalAmount}&addInfo=${paymentCode}&accountName=${encodeURIComponent(BANK_INFO.accountName)}`
+  const qrUrl = `https://img.vietqr.io/image/${BANK_CODE}-${BANK_ACCOUNT}-compact2.png?amount=${finalAmount}&addInfo=${paymentCode}&accountName=${encodeURIComponent(BANK_ACCOUNT_NAME)}`
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
@@ -229,15 +226,15 @@ export default function DepositPage() {
                 <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-700/50">
                   <p className="text-sm text-dark-500 mb-1">Ngân hàng</p>
                   <div className="flex items-center justify-between">
-                    <p className="font-semibold text-dark-900 dark:text-white">{BANK_INFO.bankName}</p>
+                    <p className="font-semibold text-dark-900 dark:text-white">{BANK_NAME}</p>
                   </div>
                 </div>
 
                 <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-700/50">
                   <p className="text-sm text-dark-500 mb-1">Số tài khoản</p>
                   <div className="flex items-center justify-between">
-                    <p className="font-semibold text-dark-900 dark:text-white font-mono">{BANK_INFO.accountNumber}</p>
-                    <button onClick={() => copyToClipboard(BANK_INFO.accountNumber, 'account')} className="text-primary-600">
+                    <p className="font-semibold text-dark-900 dark:text-white font-mono">{BANK_ACCOUNT}</p>
+                    <button onClick={() => copyToClipboard(BANK_ACCOUNT, 'account')} className="text-primary-600">
                       {copied === 'account' ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
                     </button>
                   </div>
@@ -245,7 +242,7 @@ export default function DepositPage() {
 
                 <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-700/50">
                   <p className="text-sm text-dark-500 mb-1">Chủ tài khoản</p>
-                  <p className="font-semibold text-dark-900 dark:text-white">{BANK_INFO.accountName}</p>
+                  <p className="font-semibold text-dark-900 dark:text-white">{BANK_ACCOUNT_NAME}</p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-700/50">
