@@ -21,14 +21,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Số tiền không hợp lệ' }, { status: 400 })
     }
 
-    // Create service role client directly here
+    // Create service role client
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 
     if (!serviceRoleKey || !supabaseUrl) {
       return NextResponse.json({ 
         success: false, 
-        error: `Missing env: URL=${!!supabaseUrl}, KEY=${!!serviceRoleKey}` 
+        error: 'Thiếu cấu hình server' 
       }, { status: 500 })
     }
 
@@ -41,65 +41,35 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Get current profile
-    const { data: profile, error: profileError } = await adminSupabase
+    // Try to get current balance first
+    const { data: existingProfile } = await adminSupabase
       .from('profiles')
       .select('balance')
       .eq('id', user.id)
       .single()
 
-    let currentBalance = 0
-
-    // If no profile exists, create one
-    if (profileError || !profile) {
-      const { error: insertError } = await adminSupabase
-        .from('profiles')
-        .insert({
-          id: user.id,
-          email: user.email,
-          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-          balance: amount,
-          role: 'user',
-        })
-
-      if (insertError) {
-        return NextResponse.json({ 
-          success: false, 
-          error: 'Lỗi tạo profile: ' + insertError.message
-        }, { status: 500 })
-      }
-
-      // Create transaction
-      await adminSupabase.from('transactions').insert({
-        user_id: user.id,
-        type: 'deposit',
-        amount: amount,
-        balance_before: 0,
-        balance_after: amount,
-        description: 'Nạp tiền (Test)',
-        status: 'completed',
-        payment_method: 'test',
-      })
-
-      return NextResponse.json({
-        success: true,
-        data: { amount, balance_before: 0, balance_after: amount }
-      })
-    }
-
-    currentBalance = profile.balance || 0
+    let currentBalance = existingProfile?.balance || 0
     const newBalance = currentBalance + amount
 
-    // Update balance
-    const { error: updateError } = await adminSupabase
+    // Use UPSERT to handle both insert and update cases
+    const { error: upsertError } = await adminSupabase
       .from('profiles')
-      .update({ balance: newBalance, updated_at: new Date().toISOString() })
-      .eq('id', user.id)
+      .upsert({
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+        balance: newBalance,
+        role: 'user',
+        updated_at: new Date().toISOString(),
+      }, { 
+        onConflict: 'id',
+        ignoreDuplicates: false 
+      })
 
-    if (updateError) {
+    if (upsertError) {
       return NextResponse.json({ 
         success: false, 
-        error: 'Lỗi cập nhật: ' + updateError.message
+        error: 'Lỗi cập nhật: ' + upsertError.message
       }, { status: 500 })
     }
 
