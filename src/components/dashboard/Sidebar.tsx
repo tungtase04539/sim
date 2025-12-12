@@ -19,10 +19,10 @@ import {
   Loader2
 } from 'lucide-react'
 import { cn, formatCurrency } from '@/lib/utils'
-import type { Profile } from '@/lib/types'
+import type { User } from '@/lib/types'
 
 interface SidebarProps {
-  user: Profile & { email: string }
+  user: User & { email: string }
 }
 
 const menuItems = [
