@@ -43,10 +43,10 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-dark-50 dark:bg-dark-900">
-      <AdminSidebar user={{ ...profile!, email: user.email || '' }} />
+      <AdminSidebar />
       
       <div className="lg:pl-72">
-        <AdminHeader user={{ ...profile!, email: user.email || '' }} />
+        <AdminHeader user={{ full_name: profile?.full_name || 'Admin', email: user.email || '' }} />
         
         <main className="p-6">
           {children}
