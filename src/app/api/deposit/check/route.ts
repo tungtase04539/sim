@@ -3,6 +3,8 @@ import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supab
 import { checkDeposit } from '@/lib/sepay'
 import { notifyDeposit } from '@/lib/telegram'
 
+export const dynamic = 'force-dynamic'
+
 // Check if a deposit has been completed (via SePay API polling)
 export async function POST(request: NextRequest) {
   try {
