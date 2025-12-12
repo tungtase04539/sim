@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Phone, Search, Loader2, Copy, CheckCircle2, RefreshCw, Clock, XCircle } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
-import { cn } from '@/lib/utils'
+import { Phone, Loader2, Copy, CheckCircle2, Clock, XCircle, RefreshCw } from 'lucide-react'
+import { formatCurrency, cn } from '@/lib/utils'
 
 // Services data
 const SERVICES = [
@@ -46,7 +45,7 @@ interface Order {
   price: number
   otp_code: string | null
   sms_content: string | null
-  status: 'waiting' | 'success' | 'failed' | 'cancelled'
+  status: 'waiting' | 'success' | 'failed' | 'cancelled' | 'pending'
   created_at: string
   expires_at: string
 }
@@ -55,37 +54,15 @@ export default function RentOTPPage() {
   const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0])
   const [selectedService, setSelectedService] = useState<typeof SERVICES[0] | null>(null)
   const [isOrdering, setIsOrdering] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [orders, setOrders] = useState<Order[]>([])
   const [copied, setCopied] = useState<string | null>(null)
   const [balance, setBalance] = useState(0)
-  const [search, setSearch] = useState('')
 
-  // Fetch balance on mount
+  // Fetch balance and orders on mount
   useEffect(() => {
     fetchBalance()
-  }, [])
-
-  // Simulate OTP arrival for waiting orders
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setOrders(prev => prev.map(order => {
-        if (order.status === 'waiting' && !order.otp_code) {
-          // Check if order has been waiting for more than 3 seconds
-          const waitTime = Date.now() - new Date(order.created_at).getTime()
-          if (waitTime > 3000 && Math.random() > 0.3) {
-            const otp = Math.floor(100000 + Math.random() * 900000).toString()
-            return {
-              ...order,
-              otp_code: otp,
-              sms_content: `Your verification code is: ${otp}`,
-              status: 'success' as const
-            }
-          }
-        }
-        return order
-      }))
-    }, 1000)
-    return () => clearInterval(interval)
+    fetchOrders()
   }, [])
 
   const fetchBalance = async () => {
@@ -97,6 +74,21 @@ export default function RentOTPPage() {
       }
     } catch (error) {
       console.error('Failed to fetch balance')
+    }
+  }
+
+  const fetchOrders = async () => {
+    setIsLoading(true)
+    try {
+      const res = await fetch('/api/orders')
+      const data = await res.json()
+      if (data.success) {
+        setOrders(data.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch orders')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -125,19 +117,20 @@ export default function RentOTPPage() {
       if (data.success) {
         const newOrder: Order = {
           id: data.data.order_id,
-          code: Math.floor(100000000 + Math.random() * 900000000).toString(),
+          code: data.data.order_code,
           phone_number: data.data.phone_number,
           service: data.data.service,
           country: data.data.country,
           country_flag: data.data.country_flag || selectedCountry.flag,
           price: data.data.price,
-          otp_code: null,
-          sms_content: null,
-          status: 'waiting',
-          created_at: new Date().toISOString(),
+          otp_code: data.data.otp_code,
+          sms_content: data.data.sms_content,
+          status: data.data.status,
+          created_at: data.data.created_at || new Date().toISOString(),
           expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
         }
         
+        // Add new order to the top of the list
         setOrders(prev => [newOrder, ...prev])
         setBalance(data.data.balance_after)
       } else {
@@ -150,26 +143,38 @@ export default function RentOTPPage() {
     setIsOrdering(false)
   }
 
-  const handleCancel = (orderId: string) => {
-    setOrders(prev => prev.map(o => 
-      o.id === orderId ? { ...o, status: 'cancelled' as const } : o
-    ))
-    // Refund balance
-    const order = orders.find(o => o.id === orderId)
-    if (order && order.status === 'waiting') {
-      setBalance(prev => prev + order.price)
-    }
-  }
-
   const copyToClipboard = async (text: string, id: string) => {
     await navigator.clipboard.writeText(text)
     setCopied(id)
     setTimeout(() => setCopied(null), 2000)
   }
 
-  const filteredServices = SERVICES.filter(s => 
-    s.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'success':
+        return <CheckCircle2 className="w-6 h-6 text-green-500" />
+      case 'cancelled':
+      case 'failed':
+        return <XCircle className="w-6 h-6 text-red-500" />
+      case 'waiting':
+      case 'pending':
+        return <Clock className="w-6 h-6 text-orange-500 animate-pulse" />
+      default:
+        return <Clock className="w-6 h-6 text-gray-400" />
+    }
+  }
+
+  const getStatusBgColor = (status: string) => {
+    switch (status) {
+      case 'waiting':
+      case 'pending':
+        return 'bg-yellow-50 dark:bg-yellow-900/10'
+      case 'success':
+        return 'bg-green-50/50 dark:bg-green-900/5'
+      default:
+        return ''
+    }
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -274,14 +279,23 @@ export default function RentOTPPage() {
       <div className="glass-card overflow-hidden">
         <div className="p-4 bg-primary-600 text-white flex items-center justify-between">
           <h2 className="font-semibold flex items-center gap-2">
-            MY ORDERS
+            MY ORDERS ({orders.length})
           </h2>
-          <button onClick={() => setOrders([])} className="text-sm opacity-80 hover:opacity-100">
-            Clear all
+          <button 
+            onClick={fetchOrders} 
+            className="flex items-center gap-1 text-sm opacity-80 hover:opacity-100 transition-opacity"
+          >
+            <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
+            Refresh
           </button>
         </div>
 
-        {orders.length === 0 ? (
+        {isLoading ? (
+          <div className="p-12 text-center">
+            <Loader2 className="w-8 h-8 mx-auto mb-4 animate-spin text-primary-500" />
+            <p className="text-dark-500">Đang tải lịch sử...</p>
+          </div>
+        ) : orders.length === 0 ? (
           <div className="p-12 text-center text-dark-500">
             <Phone className="w-16 h-16 mx-auto mb-4 opacity-30" />
             <p>Chưa có đơn hàng nào</p>
@@ -300,14 +314,13 @@ export default function RentOTPPage() {
                   <th className="text-left px-4 py-3 text-sm font-medium text-dark-600">Message</th>
                   <th className="text-right px-4 py-3 text-sm font-medium text-dark-600">Price</th>
                   <th className="text-center px-4 py-3 text-sm font-medium text-dark-600">Status</th>
-                  <th className="text-center px-4 py-3 text-sm font-medium text-dark-600">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order, i) => (
+                {orders.map((order) => (
                   <tr key={order.id} className={cn(
-                    "border-b border-dark-200 dark:border-dark-700",
-                    order.status === 'waiting' && "bg-yellow-50 dark:bg-yellow-900/10"
+                    "border-b border-dark-200 dark:border-dark-700 hover:bg-dark-50 dark:hover:bg-dark-800/50 transition-colors",
+                    getStatusBgColor(order.status)
                   )}>
                     <td className="px-4 py-3 font-mono text-sm">{order.code}</td>
                     <td className="px-4 py-3 text-sm text-dark-500">
@@ -318,12 +331,12 @@ export default function RentOTPPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono bg-primary-100 dark:bg-primary-900/30 px-2 py-1 rounded text-primary-700 dark:text-primary-300">
+                        <span className="font-mono bg-primary-100 dark:bg-primary-900/30 px-2 py-1 rounded text-primary-700 dark:text-primary-300 text-sm">
                           {order.phone_number}
                         </span>
                         <button
                           onClick={() => copyToClipboard(order.phone_number, order.id + '-phone')}
-                          className="px-2 py-1 bg-primary-500 text-white text-xs rounded hover:bg-primary-600"
+                          className="px-2 py-1 bg-primary-500 text-white text-xs rounded hover:bg-primary-600 transition-colors"
                         >
                           {copied === order.id + '-phone' ? '✓' : 'Copy'}
                         </button>
@@ -337,12 +350,12 @@ export default function RentOTPPage() {
                           </span>
                           <button
                             onClick={() => copyToClipboard(order.otp_code!, order.id + '-otp')}
-                            className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600"
+                            className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
                           >
                             {copied === order.id + '-otp' ? '✓' : 'Copy'}
                           </button>
                         </div>
-                      ) : order.status === 'waiting' ? (
+                      ) : order.status === 'waiting' || order.status === 'pending' ? (
                         <span className="flex items-center gap-2 text-orange-600">
                           <Loader2 className="w-4 h-4 animate-spin" />
                           Waiting...
@@ -357,24 +370,10 @@ export default function RentOTPPage() {
                     <td className="px-4 py-3 text-right font-medium text-primary-600">
                       {formatCurrency(order.price)}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      {order.status === 'success' ? (
-                        <CheckCircle2 className="w-6 h-6 text-green-500 mx-auto" />
-                      ) : order.status === 'cancelled' ? (
-                        <XCircle className="w-6 h-6 text-red-500 mx-auto" />
-                      ) : (
-                        <Clock className="w-6 h-6 text-orange-500 mx-auto animate-pulse" />
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {order.status === 'waiting' && (
-                        <button
-                          onClick={() => handleCancel(order.id)}
-                          className="px-3 py-1 bg-red-100 text-red-600 text-sm rounded hover:bg-red-200"
-                        >
-                          Cancel
-                        </button>
-                      )}
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center">
+                        {getStatusIcon(order.status)}
+                      </div>
                     </td>
                   </tr>
                 ))}
