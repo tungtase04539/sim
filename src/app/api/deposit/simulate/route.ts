@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { notifyDeposit } from '@/lib/telegram'
 
 // This endpoint simulates a deposit for testing purposes
 // In production, deposits would come through the SePay webhook
-// Force dynamic rendering - Updated
 export const dynamic = 'force-dynamic'
-export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +12,7 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
     if (authError || !user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ success: false, error: 'Unauthorized - Please login first' }, { status: 401 })
     }
 
     const { amount, payment_code } = await request.json()
@@ -23,22 +21,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Invalid amount' }, { status: 400 })
     }
 
+    // Use service role client to bypass RLS
+    const adminSupabase = await createServiceRoleClient()
+
     // Get current balance
-    const { data: profile, error: profileError } = await supabase
+    let { data: profile, error: profileError } = await adminSupabase
       .from('profiles')
       .select('balance')
       .eq('id', user.id)
       .single()
 
-    if (profileError) {
-      return NextResponse.json({ success: false, error: 'Profile not found' }, { status: 404 })
+    // If profile doesn't exist, create it
+    if (profileError || !profile) {
+      const { data: newProfile, error: createError } = await adminSupabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+          balance: 0,
+          role: 'user',
+        })
+        .select('balance')
+        .single()
+
+      if (createError) {
+        console.error('Failed to create profile:', createError)
+        return NextResponse.json({ success: false, error: 'Failed to create profile' }, { status: 500 })
+      }
+      
+      profile = newProfile
     }
 
-    const currentBalance = profile.balance || 0
+    const currentBalance = profile?.balance || 0
     const newBalance = currentBalance + amount
 
     // Update balance
-    const { error: updateError } = await supabase
+    const { error: updateError } = await adminSupabase
       .from('profiles')
       .update({ 
         balance: newBalance,
@@ -47,11 +66,12 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
 
     if (updateError) {
+      console.error('Failed to update balance:', updateError)
       return NextResponse.json({ success: false, error: 'Failed to update balance' }, { status: 500 })
     }
 
     // Create transaction record
-    await supabase.from('transactions').insert({
+    await adminSupabase.from('transactions').insert({
       user_id: user.id,
       type: 'deposit',
       amount: amount,
@@ -64,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     // Update deposit request if exists
     if (payment_code) {
-      await supabase
+      await adminSupabase
         .from('deposit_requests')
         .update({ status: 'completed' })
         .eq('payment_code', payment_code)
@@ -72,7 +92,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Send Telegram notification
-    await notifyDeposit(user.email || '', amount, payment_code || 'TEST', 'test-' + Date.now())
+    try {
+      await notifyDeposit(user.email || '', amount, payment_code || 'TEST', 'test-' + Date.now())
+    } catch (e) {
+      console.log('Telegram notification skipped')
+    }
 
     return NextResponse.json({
       success: true,
@@ -88,4 +112,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
   }
 }
-
