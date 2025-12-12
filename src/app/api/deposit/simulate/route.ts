@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase/server'
 
-// This endpoint simulates a deposit for testing purposes
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
+    // Get authenticated user
     const supabase = await createServerSupabaseClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     
@@ -19,108 +19,89 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Số tiền không hợp lệ' }, { status: 400 })
     }
 
-    // Try to get profile first
-    let { data: profile } = await supabase
+    // Use service role client to bypass RLS
+    let adminSupabase
+    try {
+      adminSupabase = await createServiceRoleClient()
+    } catch (e) {
+      // Fallback to regular client if service role not available
+      adminSupabase = supabase
+    }
+
+    // Get current profile
+    const { data: profile } = await adminSupabase
       .from('profiles')
       .select('balance')
       .eq('id', user.id)
       .single()
 
     let currentBalance = profile?.balance || 0
+    const newBalance = currentBalance + amount
 
-    // If no profile, try to create one using upsert
+    // If no profile exists, create one
     if (!profile) {
-      const { error: upsertError } = await supabase
+      const { error: insertError } = await adminSupabase
         .from('profiles')
-        .upsert({
+        .insert({
           id: user.id,
           email: user.email,
           full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
           balance: amount,
           role: 'user',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'id' })
-
-      if (upsertError) {
-        console.error('Upsert error:', upsertError)
-        // Try direct RPC call or raw update
-        const { error: updateError } = await supabase.rpc('add_balance', {
-          user_id: user.id,
-          add_amount: amount
         })
-        
-        if (updateError) {
-          // Last resort - just try update
-          await supabase
-            .from('profiles')
-            .update({ balance: amount })
-            .eq('id', user.id)
-        }
+
+      if (insertError) {
+        console.error('Insert profile error:', insertError)
+        return NextResponse.json({ 
+          success: false, 
+          error: 'Không thể tạo profile. Vui lòng thêm SUPABASE_SERVICE_ROLE_KEY vào Vercel.' 
+        }, { status: 500 })
       }
 
       return NextResponse.json({
         success: true,
-        data: {
-          amount,
-          balance_before: 0,
-          balance_after: amount,
-        }
+        data: { amount, balance_before: 0, balance_after: amount }
       })
     }
 
-    // Update existing profile balance
-    const newBalance = currentBalance + amount
-
-    const { error: updateError } = await supabase
+    // Update balance
+    const { error: updateError } = await adminSupabase
       .from('profiles')
-      .update({ 
-        balance: newBalance,
-        updated_at: new Date().toISOString()
-      })
+      .update({ balance: newBalance, updated_at: new Date().toISOString() })
       .eq('id', user.id)
 
     if (updateError) {
-      console.error('Update error:', updateError)
-      return NextResponse.json({ success: false, error: 'Không thể cập nhật số dư: ' + updateError.message }, { status: 500 })
+      console.error('Update balance error:', updateError)
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Không thể cập nhật số dư. Vui lòng thêm SUPABASE_SERVICE_ROLE_KEY vào Vercel.' 
+      }, { status: 500 })
     }
 
     // Create transaction record
-    try {
-      await supabase.from('transactions').insert({
-        user_id: user.id,
-        type: 'deposit',
-        amount: amount,
-        balance_before: currentBalance,
-        balance_after: newBalance,
-        description: 'Nạp tiền (Test)',
-        status: 'completed',
-        payment_method: 'test',
-      })
-    } catch (e) {
-      console.log('Transaction insert error:', e)
-    }
+    await adminSupabase.from('transactions').insert({
+      user_id: user.id,
+      type: 'deposit',
+      amount: amount,
+      balance_before: currentBalance,
+      balance_after: newBalance,
+      description: 'Nạp tiền (Test)',
+      status: 'completed',
+      payment_method: 'test',
+    })
 
     // Update deposit request if exists
     if (payment_code) {
-      try {
-        await supabase
-          .from('deposit_requests')
-          .update({ status: 'completed' })
-          .eq('payment_code', payment_code)
-          .eq('user_id', user.id)
-      } catch (e) {
-        console.log('Deposit request update error:', e)
-      }
+      await adminSupabase
+        .from('deposit_requests')
+        .update({ status: 'completed' })
+        .eq('payment_code', payment_code)
+        .eq('user_id', user.id)
     }
 
     return NextResponse.json({
       success: true,
-      data: {
-        amount,
-        balance_before: currentBalance,
-        balance_after: newBalance,
-      }
+      data: { amount, balance_before: currentBalance, balance_after: newBalance }
     })
 
   } catch (error) {
