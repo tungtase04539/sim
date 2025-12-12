@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,27 +21,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Số tiền không hợp lệ' }, { status: 400 })
     }
 
-    // Use service role client to bypass RLS
-    let adminSupabase
-    try {
-      adminSupabase = await createServiceRoleClient()
-    } catch (e) {
-      // Fallback to regular client if service role not available
-      adminSupabase = supabase
+    // Create service role client directly here
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+
+    if (!serviceRoleKey || !supabaseUrl) {
+      return NextResponse.json({ 
+        success: false, 
+        error: `Missing env: URL=${!!supabaseUrl}, KEY=${!!serviceRoleKey}` 
+      }, { status: 500 })
     }
 
+    const cookieStore = await cookies()
+    const adminSupabase = createServerClient(supabaseUrl, serviceRoleKey, {
+      cookies: {
+        get(name: string) { return cookieStore.get(name)?.value },
+        set() {},
+        remove() {},
+      },
+    })
+
     // Get current profile
-    const { data: profile } = await adminSupabase
+    const { data: profile, error: profileError } = await adminSupabase
       .from('profiles')
       .select('balance')
       .eq('id', user.id)
       .single()
 
-    let currentBalance = profile?.balance || 0
-    const newBalance = currentBalance + amount
+    let currentBalance = 0
 
     // If no profile exists, create one
-    if (!profile) {
+    if (profileError || !profile) {
       const { error: insertError } = await adminSupabase
         .from('profiles')
         .insert({
@@ -51,18 +63,32 @@ export async function POST(request: NextRequest) {
         })
 
       if (insertError) {
-        console.error('Insert profile error:', insertError)
         return NextResponse.json({ 
           success: false, 
-          error: 'Không thể tạo profile. Vui lòng thêm SUPABASE_SERVICE_ROLE_KEY vào Vercel.' 
+          error: 'Lỗi tạo profile: ' + insertError.message
         }, { status: 500 })
       }
+
+      // Create transaction
+      await adminSupabase.from('transactions').insert({
+        user_id: user.id,
+        type: 'deposit',
+        amount: amount,
+        balance_before: 0,
+        balance_after: amount,
+        description: 'Nạp tiền (Test)',
+        status: 'completed',
+        payment_method: 'test',
+      })
 
       return NextResponse.json({
         success: true,
         data: { amount, balance_before: 0, balance_after: amount }
       })
     }
+
+    currentBalance = profile.balance || 0
+    const newBalance = currentBalance + amount
 
     // Update balance
     const { error: updateError } = await adminSupabase
@@ -71,10 +97,9 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
 
     if (updateError) {
-      console.error('Update balance error:', updateError)
       return NextResponse.json({ 
         success: false, 
-        error: 'Không thể cập nhật số dư. Vui lòng thêm SUPABASE_SERVICE_ROLE_KEY vào Vercel.' 
+        error: 'Lỗi cập nhật: ' + updateError.message
       }, { status: 500 })
     }
 
@@ -104,8 +129,8 @@ export async function POST(request: NextRequest) {
       data: { amount, balance_before: currentBalance, balance_after: newBalance }
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Deposit simulate error:', error)
-    return NextResponse.json({ success: false, error: 'Lỗi hệ thống' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Lỗi: ' + error.message }, { status: 500 })
   }
 }
