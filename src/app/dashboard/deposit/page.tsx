@@ -8,10 +8,12 @@ import Image from 'next/image'
 const AMOUNTS = [50000, 100000, 200000, 500000, 1000000, 2000000]
 
 // Bank info - should be configured in env
+// VietQR Bank codes: https://api.vietqr.io/v2/banks
 const BANK_INFO = {
+  bankCode: 'MB', // Mã ngân hàng cho VietQR (MB, VCB, TCB, ACB, BIDV, VPB, TPB...)
   bankName: 'MB Bank',
-  accountNumber: '0326868888',
-  accountName: 'NGUYEN VAN A',
+  accountNumber: '0326868888', // Số tài khoản thật của bạn
+  accountName: 'NGUYEN VAN A', // Tên chủ tài khoản
 }
 
 export default function DepositPage() {
@@ -114,7 +116,7 @@ export default function DepositPage() {
   }
 
   const transferContent = `${paymentCode}`
-  const qrUrl = `https://img.vietqr.io/image/${BANK_INFO.bankName}-${BANK_INFO.accountNumber}-compact.png?amount=${finalAmount}&addInfo=${paymentCode}&accountName=${encodeURIComponent(BANK_INFO.accountName)}`
+  const qrUrl = `https://img.vietqr.io/image/${BANK_INFO.bankCode}-${BANK_INFO.accountNumber}-compact2.png?amount=${finalAmount}&addInfo=${paymentCode}&accountName=${encodeURIComponent(BANK_INFO.accountName)}`
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
