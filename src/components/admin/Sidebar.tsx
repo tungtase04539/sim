@@ -22,9 +22,9 @@ import { cn } from '@/lib/utils'
 const menuItems = [
   { icon: LayoutDashboard, label: 'Tổng quan', href: '/admin' },
   { icon: Users, label: 'Quản lý User', href: '/admin/users' },
+  { icon: CreditCard, label: 'Duyệt nạp tiền', href: '/admin/deposits' },
   { icon: Phone, label: 'Dịch vụ OTP', href: '/admin/services' },
   { icon: Globe, label: 'Quốc gia', href: '/admin/countries' },
-  { icon: CreditCard, label: 'Giao dịch', href: '/admin/transactions' },
   { icon: BarChart3, label: 'Thống kê', href: '/admin/statistics' },
   { icon: Server, label: 'Cài đặt hệ thống', href: '/admin/settings' },
 ]
