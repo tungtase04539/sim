@@ -4,8 +4,9 @@ import { notifyDeposit } from '@/lib/telegram'
 
 // This endpoint simulates a deposit for testing purposes
 // In production, deposits would come through the SePay webhook
-// Force dynamic rendering
+// Force dynamic rendering - Updated
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
