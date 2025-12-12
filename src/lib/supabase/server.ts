@@ -32,11 +32,18 @@ export async function createServerSupabaseClient() {
 }
 
 export async function createServiceRoleClient() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  
+  if (!serviceRoleKey) {
+    console.error('SUPABASE_SERVICE_ROLE_KEY is not set!')
+    throw new Error('Service role key not configured')
+  }
+
   const cookieStore = await cookies()
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    serviceRoleKey,
     {
       cookies: {
         get(name: string) {
