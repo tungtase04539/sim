@@ -1,73 +1,89 @@
-import { formatCurrency, formatNumber } from '@/lib/utils'
-
-// Demo mode check
-const isDemoMode = !process.env.NEXT_PUBLIC_SUPABASE_URL || 
-  process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://demo.supabase.co'
-
-const DEMO_PROFILE = {
-  id: 'demo-user-id',
-  full_name: 'Demo User',
-  balance: 500000,
-}
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { formatCurrency, formatDate } from '@/lib/utils'
+import Link from 'next/link'
 import { 
   Wallet, 
   ShoppingCart, 
   CheckCircle2, 
-  Clock,
-  TrendingUp,
-  ArrowUpRight,
-  ArrowDownRight
+  Clock, 
+  ArrowUpRight, 
+  ArrowDownRight,
+  Phone,
+  CreditCard,
+  History,
+  Key
 } from 'lucide-react'
-import Link from 'next/link'
 
-async function getProfile() {
-  if (isDemoMode) {
-    return DEMO_PROFILE
-  }
+async function getDashboardData(userId: string) {
+  const supabase = await createServerSupabaseClient()
   
-  try {
-    const { createServerSupabaseClient } = await import('@/lib/supabase/server')
-    const supabase = await createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user?.id)
-      .single()
-    
-    return profile || DEMO_PROFILE
-  } catch {
-    return DEMO_PROFILE
+  // Get user profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single()
+
+  // Get recent orders
+  const { data: orders } = await supabase
+    .from('otp_orders')
+    .select(`
+      *,
+      services:service_id(name, code),
+      countries:country_id(name, code, flag)
+    `)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(5)
+
+  // Get recent transactions
+  const { data: transactions } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(5)
+
+  // Get stats
+  const { count: totalOrders } = await supabase
+    .from('otp_orders')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+
+  const { count: successOrders } = await supabase
+    .from('otp_orders')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('status', 'success')
+
+  const { count: pendingOrders } = await supabase
+    .from('otp_orders')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('status', 'waiting')
+
+  return {
+    profile,
+    orders: orders || [],
+    transactions: transactions || [],
+    stats: {
+      totalOrders: totalOrders || 0,
+      successOrders: successOrders || 0,
+      pendingOrders: pendingOrders || 0,
+      successRate: totalOrders ? Math.round((successOrders || 0) / totalOrders * 100) : 0
+    }
   }
 }
 
 export default async function DashboardPage() {
-  const profile = await getProfile()
-
-  // For demo purposes - these would come from actual database queries
-  const stats = {
-    balance: profile?.balance || 0,
-    totalOrders: 156,
-    successfulOrders: 148,
-    pendingOrders: 3,
-    todaySpent: 125000,
-    thisMonthSpent: 2450000,
+  const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) {
+    return null
   }
 
-  const recentOrders = [
-    { id: '1', service: 'Facebook', country: '🇻🇳 Vietnam', phone: '+84912****78', status: 'success', otp: '123456', price: 5000, time: '5 phút trước' },
-    { id: '2', service: 'Google', country: '🇮🇩 Indonesia', phone: '+62812****56', status: 'waiting', otp: null, price: 6000, time: '10 phút trước' },
-    { id: '3', service: 'Telegram', country: '🇷🇺 Russia', phone: '+7912****34', status: 'success', otp: '654321', price: 8000, time: '15 phút trước' },
-    { id: '4', service: 'TikTok', country: '🇺🇸 USA', phone: '+1312****90', status: 'failed', otp: null, price: 4500, time: '20 phút trước' },
-  ]
-
-  const recentTransactions = [
-    { id: '1', type: 'deposit', amount: 500000, description: 'Nạp tiền qua MB Bank', time: '1 giờ trước' },
-    { id: '2', type: 'purchase', amount: -5000, description: 'Thuê OTP - Facebook', time: '5 phút trước' },
-    { id: '3', type: 'refund', amount: 4500, description: 'Hoàn tiền - TikTok lỗi', time: '20 phút trước' },
-    { id: '4', type: 'purchase', amount: -8000, description: 'Thuê OTP - Telegram', time: '15 phút trước' },
-  ]
+  const { profile, orders, transactions, stats } = await getDashboardData(user.id)
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -81,219 +97,178 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Balance */}
-        <div className="stat-card">
-          <div className="flex items-center justify-between mb-4">
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="glass-card p-6 card-hover">
+          <div className="flex items-start justify-between">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
               <Wallet className="w-6 h-6 text-white" />
             </div>
-            <Link 
-              href="/dashboard/deposit"
-              className="text-sm text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1"
-            >
-              Nạp thêm
-              <ArrowUpRight className="w-4 h-4" />
+            <Link href="/dashboard/deposit" className="text-primary-600 dark:text-primary-400 text-sm font-medium hover:underline flex items-center gap-1">
+              Nạp thêm <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>
-          <p className="text-sm text-dark-500 dark:text-dark-400">Số dư hiện tại</p>
+          <p className="text-dark-500 mt-4 text-sm">Số dư hiện tại</p>
           <p className="text-2xl font-bold text-dark-900 dark:text-white">
-            {formatCurrency(stats.balance)}
+            {formatCurrency(profile?.balance || 0)}
           </p>
         </div>
 
-        {/* Total Orders */}
-        <div className="stat-card">
-          <div className="flex items-center justify-between mb-4">
+        <div className="glass-card p-6 card-hover">
+          <div className="flex items-start justify-between">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
               <ShoppingCart className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+            <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full">
               Tháng này
             </span>
           </div>
-          <p className="text-sm text-dark-500 dark:text-dark-400">Tổng đơn hàng</p>
-          <p className="text-2xl font-bold text-dark-900 dark:text-white">
-            {formatNumber(stats.totalOrders)}
-          </p>
+          <p className="text-dark-500 mt-4 text-sm">Tổng đơn hàng</p>
+          <p className="text-2xl font-bold text-dark-900 dark:text-white">{stats.totalOrders}</p>
         </div>
 
-        {/* Success Rate */}
-        <div className="stat-card">
-          <div className="flex items-center justify-between mb-4">
+        <div className="glass-card p-6 card-hover">
+          <div className="flex items-start justify-between">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
               <CheckCircle2 className="w-6 h-6 text-white" />
             </div>
-            <span className="flex items-center gap-1 text-green-600 text-sm">
-              <TrendingUp className="w-4 h-4" />
-              95%
+            <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center gap-1">
+              <ArrowUpRight className="w-3 h-3" /> {stats.successRate}%
             </span>
           </div>
-          <p className="text-sm text-dark-500 dark:text-dark-400">Thành công</p>
-          <p className="text-2xl font-bold text-dark-900 dark:text-white">
-            {formatNumber(stats.successfulOrders)}
-          </p>
+          <p className="text-dark-500 mt-4 text-sm">Thành công</p>
+          <p className="text-2xl font-bold text-dark-900 dark:text-white">{stats.successOrders}</p>
         </div>
 
-        {/* Pending */}
-        <div className="stat-card">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+        <div className="glass-card p-6 card-hover">
+          <div className="flex items-start justify-between">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
               <Clock className="w-6 h-6 text-white" />
             </div>
-            <Link 
-              href="/dashboard/history?status=pending"
-              className="text-sm text-amber-600 dark:text-amber-400 hover:underline"
-            >
+            <Link href="/dashboard/history" className="text-orange-600 dark:text-orange-400 text-sm font-medium hover:underline">
               Xem
             </Link>
           </div>
-          <p className="text-sm text-dark-500 dark:text-dark-400">Đang chờ</p>
-          <p className="text-2xl font-bold text-dark-900 dark:text-white">
-            {stats.pendingOrders}
-          </p>
+          <p className="text-dark-500 mt-4 text-sm">Đang chờ</p>
+          <p className="text-2xl font-bold text-dark-900 dark:text-white">{stats.pendingOrders}</p>
         </div>
       </div>
 
-      {/* Content Grid */}
+      {/* Recent Orders & Transactions */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Orders */}
         <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-dark-900 dark:text-white">
-              Đơn hàng gần đây
-            </h2>
-            <Link 
-              href="/dashboard/history"
-              className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
-            >
+            <h2 className="text-lg font-semibold text-dark-900 dark:text-white">Đơn hàng gần đây</h2>
+            <Link href="/dashboard/history" className="text-primary-600 dark:text-primary-400 text-sm hover:underline">
               Xem tất cả
             </Link>
           </div>
           
-          <div className="space-y-3">
-            {recentOrders.map((order) => (
-              <div 
-                key={order.id}
-                className="flex items-center gap-4 p-3 rounded-xl bg-dark-50 dark:bg-dark-700/50 hover:bg-dark-100 dark:hover:bg-dark-700 transition-colors"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-dark-800 dark:text-white">
-                      {order.service}
-                    </span>
-                    <span className="text-sm text-dark-500">{order.country}</span>
+          {orders.length === 0 ? (
+            <div className="text-center py-8 text-dark-500">
+              <Phone className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <p>Chưa có đơn hàng nào</p>
+              <Link href="/dashboard/rent" className="text-primary-600 hover:underline text-sm">
+                Thuê OTP ngay
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {orders.map((order: any) => (
+                <div key={order.id} className="flex items-center justify-between p-3 rounded-xl bg-dark-50 dark:bg-dark-700/50 hover:bg-dark-100 dark:hover:bg-dark-700 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">{order.countries?.flag || '🌍'}</div>
+                    <div>
+                      <p className="font-medium text-dark-900 dark:text-white">
+                        {order.services?.name || 'Service'} 
+                        <span className="text-xs text-dark-500 ml-2">{order.countries?.name}</span>
+                      </p>
+                      <p className="text-sm text-dark-500">{order.phone_number}</p>
+                    </div>
                   </div>
-                  <p className="text-sm text-dark-500 dark:text-dark-400 font-mono">
-                    {order.phone}
-                  </p>
+                  <div className="text-right">
+                    {order.otp_code ? (
+                      <p className="font-mono font-bold text-green-600">{order.otp_code}</p>
+                    ) : order.status === 'waiting' ? (
+                      <p className="text-orange-600 text-sm">Đang chờ...</p>
+                    ) : (
+                      <p className="text-red-600 text-sm">Thất bại</p>
+                    )}
+                    <p className="text-xs text-dark-400">{formatDate(order.created_at)}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  {order.status === 'success' && (
-                    <span className="text-lg font-mono font-bold text-green-600 dark:text-green-400">
-                      {order.otp}
-                    </span>
-                  )}
-                  {order.status === 'waiting' && (
-                    <span className="text-sm text-amber-600 dark:text-amber-400">
-                      Đang chờ...
-                    </span>
-                  )}
-                  {order.status === 'failed' && (
-                    <span className="text-sm text-red-600 dark:text-red-400">
-                      Thất bại
-                    </span>
-                  )}
-                  <p className="text-xs text-dark-400">{order.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Recent Transactions */}
         <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-dark-900 dark:text-white">
-              Giao dịch gần đây
-            </h2>
-            <Link 
-              href="/dashboard/transactions"
-              className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
-            >
+            <h2 className="text-lg font-semibold text-dark-900 dark:text-white">Giao dịch gần đây</h2>
+            <Link href="/dashboard/transactions" className="text-primary-600 dark:text-primary-400 text-sm hover:underline">
               Xem tất cả
             </Link>
           </div>
           
-          <div className="space-y-3">
-            {recentTransactions.map((tx) => (
-              <div 
-                key={tx.id}
-                className="flex items-center gap-4 p-3 rounded-xl bg-dark-50 dark:bg-dark-700/50"
-              >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  tx.type === 'deposit' ? 'bg-green-100 dark:bg-green-900/30' :
-                  tx.type === 'refund' ? 'bg-purple-100 dark:bg-purple-900/30' :
-                  'bg-red-100 dark:bg-red-900/30'
-                }`}>
-                  {tx.amount > 0 ? (
-                    <ArrowDownRight className={`w-5 h-5 ${
-                      tx.type === 'deposit' ? 'text-green-600' : 'text-purple-600'
-                    }`} />
-                  ) : (
-                    <ArrowUpRight className="w-5 h-5 text-red-600" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-dark-800 dark:text-white truncate">
-                    {tx.description}
+          {transactions.length === 0 ? (
+            <div className="text-center py-8 text-dark-500">
+              <CreditCard className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <p>Chưa có giao dịch nào</p>
+              <Link href="/dashboard/deposit" className="text-primary-600 hover:underline text-sm">
+                Nạp tiền ngay
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {transactions.map((tx: any) => (
+                <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl bg-dark-50 dark:bg-dark-700/50">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      tx.type === 'deposit' ? 'bg-green-100 dark:bg-green-900/30' :
+                      tx.type === 'refund' ? 'bg-purple-100 dark:bg-purple-900/30' :
+                      'bg-red-100 dark:bg-red-900/30'
+                    }`}>
+                      {tx.amount > 0 ? (
+                        <ArrowDownRight className={`w-5 h-5 ${tx.type === 'deposit' ? 'text-green-600' : 'text-purple-600'}`} />
+                      ) : (
+                        <ArrowUpRight className="w-5 h-5 text-red-600" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-dark-900 dark:text-white">{tx.description}</p>
+                      <p className="text-xs text-dark-500">{formatDate(tx.created_at)}</p>
+                    </div>
+                  </div>
+                  <p className={`font-semibold ${tx.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {tx.amount > 0 ? '+' : ''}{formatCurrency(tx.amount)}
                   </p>
-                  <p className="text-xs text-dark-500">{tx.time}</p>
                 </div>
-                <div className={`font-semibold ${
-                  tx.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                }`}>
-                  {tx.amount > 0 ? '+' : ''}{formatCurrency(tx.amount)}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Quick Actions */}
       <div className="glass-card p-6">
-        <h2 className="text-lg font-semibold text-dark-900 dark:text-white mb-4">
-          Thao tác nhanh
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <Link
-            href="/dashboard/rent"
-            className="p-4 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white text-center hover:shadow-lg hover:shadow-primary-500/30 transition-all"
-          >
-            <ShoppingCart className="w-8 h-8 mx-auto mb-2" />
+        <h2 className="text-lg font-semibold text-dark-900 dark:text-white mb-4">Thao tác nhanh</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Link href="/dashboard/rent" className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white hover:shadow-lg hover:shadow-primary-500/25 transition-all">
+            <Phone className="w-8 h-8 mb-2" />
             <span className="font-medium">Thuê OTP</span>
           </Link>
-          <Link
-            href="/dashboard/deposit"
-            className="p-4 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white text-center hover:shadow-lg hover:shadow-green-500/30 transition-all"
-          >
-            <Wallet className="w-8 h-8 mx-auto mb-2" />
+          <Link href="/dashboard/deposit" className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white hover:shadow-lg hover:shadow-green-500/25 transition-all">
+            <Wallet className="w-8 h-8 mb-2" />
             <span className="font-medium">Nạp tiền</span>
           </Link>
-          <Link
-            href="/dashboard/history"
-            className="p-4 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white text-center hover:shadow-lg hover:shadow-blue-500/30 transition-all"
-          >
-            <Clock className="w-8 h-8 mx-auto mb-2" />
+          <Link href="/dashboard/history" className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:shadow-lg hover:shadow-blue-500/25 transition-all">
+            <History className="w-8 h-8 mb-2" />
             <span className="font-medium">Lịch sử</span>
           </Link>
-          <Link
-            href="/dashboard/api"
-            className="p-4 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white text-center hover:shadow-lg hover:shadow-purple-500/30 transition-all"
-          >
-            <TrendingUp className="w-8 h-8 mx-auto mb-2" />
+          <Link href="/dashboard/api" className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white hover:shadow-lg hover:shadow-purple-500/25 transition-all">
+            <Key className="w-8 h-8 mb-2" />
             <span className="font-medium">API</span>
           </Link>
         </div>
@@ -301,4 +276,3 @@ export default async function DashboardPage() {
     </div>
   )
 }
-

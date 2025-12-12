@@ -1,17 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { Settings, User, Lock, Bell, Key, Save, Loader2, Eye, EyeOff } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Settings, User, Lock, Bell, Save, Loader2, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('profile')
   const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
+  const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null)
   
   const [profile, setProfile] = useState({
-    full_name: 'Demo User',
-    email: 'demo@otpresale.com',
+    full_name: '',
+    email: '',
   })
 
   const [password, setPassword] = useState({
@@ -20,23 +22,88 @@ export default function SettingsPage() {
     confirm: '',
   })
 
+  useEffect(() => {
+    fetchProfile()
+  }, [])
+
+  const fetchProfile = async () => {
+    try {
+      const res = await fetch('/api/user/profile')
+      const data = await res.json()
+      if (data.success) {
+        setProfile({
+          full_name: data.data.full_name || '',
+          email: data.data.email || '',
+        })
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile')
+    }
+    setIsFetching(false)
+  }
+
   const handleSaveProfile = async () => {
     setIsLoading(true)
-    await new Promise(r => setTimeout(r, 1000))
+    setMessage(null)
+    
+    try {
+      const res = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: profile.full_name })
+      })
+      
+      const data = await res.json()
+      
+      if (data.success) {
+        setMessage({ type: 'success', text: 'Đã lưu thông tin!' })
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Có lỗi xảy ra' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Có lỗi xảy ra' })
+    }
+    
     setIsLoading(false)
-    alert('Đã lưu thông tin!')
   }
 
   const handleChangePassword = async () => {
     if (password.new !== password.confirm) {
-      alert('Mật khẩu xác nhận không khớp!')
+      setMessage({ type: 'error', text: 'Mật khẩu xác nhận không khớp!' })
       return
     }
+    
+    if (password.new.length < 6) {
+      setMessage({ type: 'error', text: 'Mật khẩu mới phải có ít nhất 6 ký tự!' })
+      return
+    }
+    
     setIsLoading(true)
-    await new Promise(r => setTimeout(r, 1000))
+    setMessage(null)
+    
+    try {
+      const res = await fetch('/api/user/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          current_password: password.current,
+          new_password: password.new 
+        })
+      })
+      
+      const data = await res.json()
+      
+      if (data.success) {
+        setMessage({ type: 'success', text: 'Đã đổi mật khẩu thành công!' })
+        setPassword({ current: '', new: '', confirm: '' })
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Có lỗi xảy ra' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Có lỗi xảy ra' })
+    }
+    
     setIsLoading(false)
-    alert('Đã đổi mật khẩu!')
-    setPassword({ current: '', new: '', confirm: '' })
   }
 
   const tabs = [
@@ -44,6 +111,14 @@ export default function SettingsPage() {
     { id: 'security', label: 'Bảo mật', icon: Lock },
     { id: 'notifications', label: 'Thông báo', icon: Bell },
   ]
+
+  if (isFetching) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
@@ -57,13 +132,26 @@ export default function SettingsPage() {
         </p>
       </div>
 
+      {/* Message */}
+      {message && (
+        <div className={cn(
+          "p-4 rounded-xl flex items-center gap-3",
+          message.type === 'success' 
+            ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400"
+            : "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
+        )}>
+          <CheckCircle2 className="w-5 h-5" />
+          {message.text}
+        </div>
+      )}
+
       <div className="glass-card overflow-hidden">
         {/* Tabs */}
         <div className="flex border-b border-dark-200 dark:border-dark-700">
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => { setActiveTab(tab.id); setMessage(null) }}
               className={cn(
                 "flex items-center gap-2 px-6 py-4 font-medium transition-colors",
                 activeTab === tab.id
@@ -203,4 +291,3 @@ export default function SettingsPage() {
     </div>
   )
 }
-

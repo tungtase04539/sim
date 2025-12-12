@@ -1,15 +1,33 @@
 'use client'
 
-import { useState } from 'react'
-import { Key, Copy, RefreshCw, CheckCircle2, Eye, EyeOff, Code } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Key, Copy, RefreshCw, CheckCircle2, Eye, EyeOff, Code, Loader2 } from 'lucide-react'
 import { generateApiKey } from '@/lib/utils'
 import Link from 'next/link'
 
 export default function ApiKeyPage() {
-  const [apiKey, setApiKey] = useState('otp_demo_xxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+  const [apiKey, setApiKey] = useState('')
   const [showKey, setShowKey] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    fetchApiKey()
+  }, [])
+
+  const fetchApiKey = async () => {
+    try {
+      const res = await fetch('/api/user/api-key')
+      const data = await res.json()
+      if (data.success && data.data.api_key) {
+        setApiKey(data.data.api_key)
+      }
+    } catch (error) {
+      console.error('Failed to fetch API key')
+    }
+    setIsLoading(false)
+  }
 
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(apiKey)
@@ -21,9 +39,30 @@ export default function ApiKeyPage() {
     if (!confirm('Bạn có chắc muốn tạo API Key mới? Key cũ sẽ không còn hoạt động.')) return
     
     setIsGenerating(true)
-    await new Promise(r => setTimeout(r, 1000))
-    setApiKey(generateApiKey())
+    
+    try {
+      const res = await fetch('/api/user/api-key', {
+        method: 'POST',
+      })
+      const data = await res.json()
+      if (data.success) {
+        setApiKey(data.data.api_key)
+      }
+    } catch (error) {
+      // Fallback - generate locally
+      const newKey = generateApiKey()
+      setApiKey(newKey)
+    }
+    
     setIsGenerating(false)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
+      </div>
+    )
   }
 
   return (
@@ -44,41 +83,67 @@ export default function ApiKeyPage() {
           API Key của bạn
         </h2>
         
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-dark-100 dark:bg-dark-700">
-          <code className="flex-1 font-mono text-sm overflow-hidden">
-            {showKey ? apiKey : '•'.repeat(40)}
-          </code>
-          
-          <button
-            onClick={() => setShowKey(!showKey)}
-            className="p-2 rounded-lg hover:bg-dark-200 dark:hover:bg-dark-600"
-          >
-            {showKey ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-          </button>
-          
-          <button
-            onClick={copyToClipboard}
-            className="p-2 rounded-lg hover:bg-dark-200 dark:hover:bg-dark-600"
-          >
-            {copied ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
-          </button>
-        </div>
+        {apiKey ? (
+          <>
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-dark-100 dark:bg-dark-700">
+              <code className="flex-1 font-mono text-sm overflow-hidden">
+                {showKey ? apiKey : '•'.repeat(40)}
+              </code>
+              
+              <button
+                onClick={() => setShowKey(!showKey)}
+                className="p-2 rounded-lg hover:bg-dark-200 dark:hover:bg-dark-600"
+              >
+                {showKey ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+              
+              <button
+                onClick={copyToClipboard}
+                className="p-2 rounded-lg hover:bg-dark-200 dark:hover:bg-dark-600"
+              >
+                {copied ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+              </button>
+            </div>
 
-        <div className="flex items-center gap-4 mt-4">
-          <button
-            onClick={regenerateKey}
-            disabled={isGenerating}
-            className="btn-secondary flex items-center gap-2"
-          >
-            <RefreshCw className={`w-5 h-5 ${isGenerating ? 'animate-spin' : ''}`} />
-            Tạo key mới
-          </button>
-          
-          <Link href="/api-docs" className="text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-2">
-            <Code className="w-5 h-5" />
-            Xem tài liệu API
-          </Link>
-        </div>
+            <div className="flex items-center gap-4 mt-4">
+              <button
+                onClick={regenerateKey}
+                disabled={isGenerating}
+                className="btn-secondary flex items-center gap-2"
+              >
+                <RefreshCw className={`w-5 h-5 ${isGenerating ? 'animate-spin' : ''}`} />
+                Tạo key mới
+              </button>
+              
+              <Link href="/api-docs" className="text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-2">
+                <Code className="w-5 h-5" />
+                Xem tài liệu API
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-8">
+            <Key className="w-16 h-16 mx-auto mb-4 text-dark-300" />
+            <p className="text-dark-600 dark:text-dark-400 mb-4">Bạn chưa có API Key</p>
+            <button
+              onClick={regenerateKey}
+              disabled={isGenerating}
+              className="btn-primary flex items-center gap-2 mx-auto"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Đang tạo...
+                </>
+              ) : (
+                <>
+                  <Key className="w-5 h-5" />
+                  Tạo API Key
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         <div className="mt-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
           <p className="text-amber-800 dark:text-amber-200 text-sm">
@@ -98,18 +163,18 @@ export default function ApiKeyPage() {
           <div>
             <h3 className="font-medium mb-2">Thuê số nhận OTP:</h3>
             <div className="bg-dark-900 rounded-xl p-4 overflow-x-auto">
-              <pre className="text-sm text-gray-300">{`curl -X POST https://sim-five-red.vercel.app/api/orders \\
-  -H "Authorization: Bearer ${showKey ? apiKey : 'YOUR_API_KEY'}" \\
+              <pre className="text-sm text-gray-300">{`curl -X POST https://your-domain.vercel.app/api/orders \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
-  -d '{"service_id": "xxx", "country_id": "xxx"}'`}</pre>
+  -d '{"service_id": "1", "country_id": "1"}'`}</pre>
             </div>
           </div>
 
           <div>
             <h3 className="font-medium mb-2">Kiểm tra trạng thái:</h3>
             <div className="bg-dark-900 rounded-xl p-4 overflow-x-auto">
-              <pre className="text-sm text-gray-300">{`curl https://sim-five-red.vercel.app/api/orders/ORDER_ID \\
-  -H "Authorization: Bearer ${showKey ? apiKey : 'YOUR_API_KEY'}"`}</pre>
+              <pre className="text-sm text-gray-300">{`curl https://your-domain.vercel.app/api/orders/ORDER_ID \\
+  -H "Authorization: Bearer YOUR_API_KEY"`}</pre>
             </div>
           </div>
         </div>
@@ -139,4 +204,3 @@ export default function ApiKeyPage() {
     </div>
   )
 }
-

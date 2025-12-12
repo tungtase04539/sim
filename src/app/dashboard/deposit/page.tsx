@@ -1,304 +1,323 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  Wallet, 
-  Copy, 
-  CheckCircle2, 
-  AlertCircle,
-  Loader2,
-  QrCode,
-  Building2,
-  RefreshCw
-} from 'lucide-react'
-import { cn, formatCurrency, generatePaymentCode } from '@/lib/utils'
-import { createClient } from '@/lib/supabase/client'
+import { Wallet, Copy, CheckCircle2, Loader2, QrCode, Clock, AlertCircle } from 'lucide-react'
+import { formatCurrency } from '@/lib/utils'
+import Image from 'next/image'
 
+const AMOUNTS = [50000, 100000, 200000, 500000, 1000000, 2000000]
+
+// Bank info - should be configured in env
 const BANK_INFO = {
   bankName: 'MB Bank',
   accountNumber: '0326868888',
-  accountName: 'OTP RESALE',
-  bankBin: '970422',
+  accountName: 'NGUYEN VAN A',
 }
-
-const PRESET_AMOUNTS = [50000, 100000, 200000, 500000, 1000000, 2000000]
 
 export default function DepositPage() {
   const [amount, setAmount] = useState(100000)
   const [customAmount, setCustomAmount] = useState('')
   const [paymentCode, setPaymentCode] = useState('')
+  const [isCreating, setIsCreating] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
-  const [isChecking, setIsChecking] = useState(false)
-  const [depositStatus, setDepositStatus] = useState<'pending' | 'success' | null>(null)
+  const [showQR, setShowQR] = useState(false)
+  const [isSimulating, setIsSimulating] = useState(false)
+  const [countdown, setCountdown] = useState(0)
 
-  useEffect(() => {
-    setPaymentCode(generatePaymentCode())
-  }, [])
+  const finalAmount = customAmount ? parseInt(customAmount) : amount
 
-  const qrCodeUrl = `https://img.vietqr.io/image/${BANK_INFO.bankBin}-${BANK_INFO.accountNumber}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(paymentCode)}&accountName=${encodeURIComponent(BANK_INFO.accountName)}`
+  const generatePaymentCode = () => {
+    return 'OTP' + Math.random().toString(36).substring(2, 8).toUpperCase()
+  }
 
-  const copyToClipboard = async (text: string, key: string) => {
+  const handleCreateDeposit = async () => {
+    if (finalAmount < 10000) {
+      alert('Số tiền tối thiểu là 10,000đ')
+      return
+    }
+
+    setIsCreating(true)
+    
+    try {
+      const res = await fetch('/api/deposit/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: finalAmount })
+      })
+      
+      const data = await res.json()
+      
+      if (data.success) {
+        setPaymentCode(data.data.payment_code)
+        setShowQR(true)
+        setCountdown(30 * 60) // 30 minutes
+      } else {
+        // Fallback for demo
+        setPaymentCode(generatePaymentCode())
+        setShowQR(true)
+        setCountdown(30 * 60)
+      }
+    } catch (error) {
+      // Fallback
+      setPaymentCode(generatePaymentCode())
+      setShowQR(true)
+      setCountdown(30 * 60)
+    }
+    
+    setIsCreating(false)
+  }
+
+  // Simulate deposit for testing
+  const handleSimulateDeposit = async () => {
+    setIsSimulating(true)
+    
+    try {
+      const res = await fetch('/api/deposit/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: finalAmount, payment_code: paymentCode })
+      })
+      
+      const data = await res.json()
+      
+      if (data.success) {
+        alert(`✅ Nạp tiền thành công!\n\nSố tiền: ${formatCurrency(finalAmount)}\nSố dư mới: ${formatCurrency(data.data.balance_after)}`)
+        window.location.reload()
+      } else {
+        alert('Lỗi: ' + data.error)
+      }
+    } catch (error) {
+      alert('Có lỗi xảy ra. Vui lòng thử lại.')
+    }
+    
+    setIsSimulating(false)
+  }
+
+  const copyToClipboard = async (text: string, field: string) => {
     await navigator.clipboard.writeText(text)
-    setCopied(key)
+    setCopied(field)
     setTimeout(() => setCopied(null), 2000)
   }
 
-  const handleAmountChange = (value: number) => {
-    setAmount(value)
-    setCustomAmount('')
-  }
-
-  const handleCustomAmountChange = (value: string) => {
-    const numValue = parseInt(value.replace(/\D/g, '')) || 0
-    setCustomAmount(value)
-    if (numValue >= 10000) {
-      setAmount(numValue)
+  // Countdown timer
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setInterval(() => setCountdown(c => c - 1), 1000)
+      return () => clearInterval(timer)
     }
+  }, [countdown])
+
+  const formatCountdown = (seconds: number) => {
+    const m = Math.floor(seconds / 60)
+    const s = seconds % 60
+    return `${m}:${s.toString().padStart(2, '0')}`
   }
 
-  const checkDeposit = async () => {
-    setIsChecking(true)
-    // Simulate checking - in production this would call the API
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    
-    // For demo, randomly show success
-    if (Math.random() > 0.5) {
-      setDepositStatus('success')
-    }
-    
-    setIsChecking(false)
-  }
-
-  const transferContent = paymentCode
+  const transferContent = `${paymentCode}`
+  const qrUrl = `https://img.vietqr.io/image/${BANK_INFO.bankName}-${BANK_INFO.accountNumber}-compact.png?amount=${finalAmount}&addInfo=${paymentCode}&accountName=${encodeURIComponent(BANK_INFO.accountName)}`
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-dark-900 dark:text-white flex items-center gap-3">
           <Wallet className="w-8 h-8 text-primary-500" />
           Nạp tiền
         </h1>
         <p className="text-dark-600 dark:text-dark-400 mt-1">
-          Chuyển khoản qua ngân hàng, số dư được cộng tự động sau 1-3 phút.
+          Chuyển khoản ngân hàng - Cộng tiền tự động trong 1-3 phút
         </p>
       </div>
 
-      {depositStatus === 'success' ? (
-        <div className="glass-card p-8 text-center animate-fade-in">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-            <CheckCircle2 className="w-10 h-10 text-green-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-dark-900 dark:text-white mb-2">
-            Nạp tiền thành công!
-          </h2>
-          <p className="text-dark-600 dark:text-dark-400 mb-6">
-            Số dư của bạn đã được cộng {formatCurrency(amount)}
-          </p>
-          <button
-            onClick={() => {
-              setDepositStatus(null)
-              setPaymentCode(generatePaymentCode())
-            }}
-            className="btn-primary"
-          >
-            Nạp thêm
-          </button>
-        </div>
-      ) : (
-        <div className="grid lg:grid-cols-2 gap-6">
+      {!showQR ? (
+        <>
           {/* Amount Selection */}
           <div className="glass-card p-6">
             <h2 className="text-lg font-semibold text-dark-900 dark:text-white mb-4">
-              1. Chọn số tiền
+              Chọn số tiền nạp
             </h2>
             
             <div className="grid grid-cols-3 gap-3 mb-4">
-              {PRESET_AMOUNTS.map((preset) => (
+              {AMOUNTS.map((a) => (
                 <button
-                  key={preset}
-                  onClick={() => handleAmountChange(preset)}
-                  className={cn(
-                    "py-3 px-4 rounded-xl font-medium transition-all",
-                    amount === preset && !customAmount
-                      ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30"
-                      : "bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 text-dark-700 dark:text-dark-200"
-                  )}
+                  key={a}
+                  onClick={() => { setAmount(a); setCustomAmount('') }}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    amount === a && !customAmount
+                      ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                      : 'border-dark-200 dark:border-dark-700 hover:border-primary-300'
+                  }`}
                 >
-                  {formatCurrency(preset)}
+                  <span className="font-semibold">{formatCurrency(a)}</span>
                 </button>
               ))}
             </div>
 
-            <div className="relative">
+            <div>
+              <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
+                Hoặc nhập số tiền khác
+              </label>
               <input
-                type="text"
+                type="number"
+                placeholder="Nhập số tiền..."
                 value={customAmount}
-                onChange={(e) => handleCustomAmountChange(e.target.value)}
-                placeholder="Nhập số tiền khác..."
-                className="input-field text-center text-lg"
+                onChange={(e) => setCustomAmount(e.target.value)}
+                className="input-field"
+                min="10000"
+                step="10000"
               />
-              {customAmount && (
-                <p className="text-center text-sm text-dark-500 mt-2">
-                  = {formatCurrency(amount)}
-                </p>
-              )}
-            </div>
-
-            <div className="mt-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-amber-800 dark:text-amber-200">
-                  <p className="font-medium">Lưu ý quan trọng:</p>
-                  <ul className="mt-1 space-y-1 list-disc list-inside text-amber-700 dark:text-amber-300">
-                    <li>Số tiền nạp tối thiểu: 10,000 VND</li>
-                    <li>Nội dung chuyển khoản phải chính xác</li>
-                    <li>Số dư được cộng tự động sau 1-3 phút</li>
-                  </ul>
-                </div>
-              </div>
+              <p className="text-sm text-dark-500 mt-1">Tối thiểu: 10,000đ</p>
             </div>
           </div>
 
-          {/* Payment Info */}
+          {/* Summary */}
           <div className="glass-card p-6">
-            <h2 className="text-lg font-semibold text-dark-900 dark:text-white mb-4">
-              2. Thông tin chuyển khoản
-            </h2>
-
-            {/* QR Code */}
-            <div className="flex justify-center mb-6">
-              <div className="p-3 bg-white rounded-2xl shadow-lg">
-                <img 
-                  src={qrCodeUrl} 
-                  alt="QR Code" 
-                  className="w-48 h-48 object-contain"
-                />
-              </div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-dark-600 dark:text-dark-400">Số tiền nạp:</span>
+              <span className="text-2xl font-bold text-primary-600">{formatCurrency(finalAmount)}</span>
             </div>
-
-            <p className="text-center text-sm text-dark-500 dark:text-dark-400 mb-6">
-              Quét mã QR hoặc chuyển khoản thủ công
-            </p>
-
-            {/* Bank Details */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-dark-50 dark:bg-dark-700/50">
-                <div className="flex items-center gap-3">
-                  <Building2 className="w-5 h-5 text-dark-400" />
-                  <div>
-                    <p className="text-xs text-dark-500">Ngân hàng</p>
-                    <p className="font-medium">{BANK_INFO.bankName}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-dark-50 dark:bg-dark-700/50">
-                <div>
-                  <p className="text-xs text-dark-500">Số tài khoản</p>
-                  <p className="font-mono font-bold text-lg">{BANK_INFO.accountNumber}</p>
-                </div>
-                <button
-                  onClick={() => copyToClipboard(BANK_INFO.accountNumber, 'account')}
-                  className="p-2 rounded-lg hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
-                >
-                  {copied === 'account' ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <Copy className="w-5 h-5 text-dark-400" />
-                  )}
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-dark-50 dark:bg-dark-700/50">
-                <div>
-                  <p className="text-xs text-dark-500">Tên tài khoản</p>
-                  <p className="font-medium">{BANK_INFO.accountName}</p>
-                </div>
-                <button
-                  onClick={() => copyToClipboard(BANK_INFO.accountName, 'name')}
-                  className="p-2 rounded-lg hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
-                >
-                  {copied === 'name' ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <Copy className="w-5 h-5 text-dark-400" />
-                  )}
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-dark-50 dark:bg-dark-700/50">
-                <div>
-                  <p className="text-xs text-dark-500">Số tiền</p>
-                  <p className="font-bold text-lg text-primary-600">{formatCurrency(amount)}</p>
-                </div>
-                <button
-                  onClick={() => copyToClipboard(amount.toString(), 'amount')}
-                  className="p-2 rounded-lg hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
-                >
-                  {copied === 'amount' ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <Copy className="w-5 h-5 text-dark-400" />
-                  )}
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 border-2 border-primary-200 dark:border-primary-800">
-                <div>
-                  <p className="text-xs text-dark-500">Nội dung chuyển khoản</p>
-                  <p className="font-mono font-bold text-lg text-primary-600">{transferContent}</p>
-                </div>
-                <button
-                  onClick={() => copyToClipboard(transferContent, 'content')}
-                  className="p-2 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors"
-                >
-                  {copied === 'content' ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <Copy className="w-5 h-5 text-primary-500" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Check Button */}
+            
             <button
-              onClick={checkDeposit}
-              disabled={isChecking}
-              className={cn(
-                "w-full mt-6 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all",
-                isChecking
-                  ? "bg-dark-200 dark:bg-dark-700 text-dark-500 cursor-not-allowed"
-                  : "btn-primary"
-              )}
+              onClick={handleCreateDeposit}
+              disabled={isCreating || finalAmount < 10000}
+              className="btn-primary w-full flex items-center justify-center gap-2"
             >
-              {isChecking ? (
+              {isCreating ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Đang kiểm tra...
+                  Đang tạo...
                 </>
               ) : (
                 <>
-                  <RefreshCw className="w-5 h-5" />
-                  Kiểm tra giao dịch
+                  <QrCode className="w-5 h-5" />
+                  Tạo mã thanh toán
                 </>
               )}
             </button>
           </div>
-        </div>
-      )}
+        </>
+      ) : (
+        <>
+          {/* Payment Info */}
+          <div className="glass-card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-dark-900 dark:text-white">
+                Thông tin chuyển khoản
+              </h2>
+              <div className="flex items-center gap-2 text-orange-600">
+                <Clock className="w-5 h-5" />
+                <span className="font-mono">{formatCountdown(countdown)}</span>
+              </div>
+            </div>
 
-      {/* Transaction History Preview */}
-      <div className="glass-card p-6">
-        <h2 className="text-lg font-semibold text-dark-900 dark:text-white mb-4">
-          Lịch sử nạp tiền gần đây
-        </h2>
-        <div className="text-center py-8 text-dark-500">
-          Chưa có giao dịch nạp tiền nào
-        </div>
-      </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* QR Code */}
+              <div className="flex flex-col items-center p-4 bg-white rounded-xl">
+                <Image
+                  src={qrUrl}
+                  alt="QR Code"
+                  width={250}
+                  height={250}
+                  className="rounded-lg"
+                />
+                <p className="text-sm text-dark-500 mt-2">Quét mã QR để thanh toán</p>
+              </div>
+
+              {/* Bank Details */}
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-700/50">
+                  <p className="text-sm text-dark-500 mb-1">Ngân hàng</p>
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold text-dark-900 dark:text-white">{BANK_INFO.bankName}</p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-700/50">
+                  <p className="text-sm text-dark-500 mb-1">Số tài khoản</p>
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold text-dark-900 dark:text-white font-mono">{BANK_INFO.accountNumber}</p>
+                    <button onClick={() => copyToClipboard(BANK_INFO.accountNumber, 'account')} className="text-primary-600">
+                      {copied === 'account' ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-700/50">
+                  <p className="text-sm text-dark-500 mb-1">Chủ tài khoản</p>
+                  <p className="font-semibold text-dark-900 dark:text-white">{BANK_INFO.accountName}</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-dark-50 dark:bg-dark-700/50">
+                  <p className="text-sm text-dark-500 mb-1">Số tiền</p>
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold text-primary-600 text-xl">{formatCurrency(finalAmount)}</p>
+                    <button onClick={() => copyToClipboard(finalAmount.toString(), 'amount')} className="text-primary-600">
+                      {copied === 'amount' ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-primary-50 dark:bg-primary-900/20 border-2 border-primary-500">
+                  <p className="text-sm text-primary-600 mb-1">Nội dung chuyển khoản (BẮT BUỘC)</p>
+                  <div className="flex items-center justify-between">
+                    <p className="font-bold text-primary-700 dark:text-primary-400 font-mono text-lg">{transferContent}</p>
+                    <button onClick={() => copyToClipboard(transferContent, 'content')} className="text-primary-600">
+                      {copied === 'content' ? <CheckCircle2 className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Warning */}
+          <div className="glass-card p-4 border-l-4 border-amber-500 bg-amber-50 dark:bg-amber-900/20">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-amber-800 dark:text-amber-200">Lưu ý quan trọng</p>
+                <ul className="text-sm text-amber-700 dark:text-amber-300 mt-1 space-y-1">
+                  <li>• Nhập ĐÚNG nội dung chuyển khoản để được cộng tiền tự động</li>
+                  <li>• Thời gian xử lý: 1-3 phút sau khi chuyển khoản thành công</li>
+                  <li>• Liên hệ hỗ trợ nếu quá 10 phút chưa nhận được tiền</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Test Button */}
+          <div className="glass-card p-6 border-2 border-dashed border-green-500">
+            <h3 className="font-semibold text-green-700 dark:text-green-400 mb-2">🧪 Chế độ Test</h3>
+            <p className="text-sm text-dark-600 dark:text-dark-400 mb-4">
+              Nhấn nút bên dưới để giả lập việc nạp tiền thành công (chỉ dùng để test)
+            </p>
+            <button
+              onClick={handleSimulateDeposit}
+              disabled={isSimulating}
+              className="btn-primary bg-green-600 hover:bg-green-700 flex items-center gap-2"
+            >
+              {isSimulating ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-5 h-5" />
+                  Giả lập nạp tiền thành công
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* New Deposit */}
+          <button
+            onClick={() => { setShowQR(false); setPaymentCode('') }}
+            className="btn-secondary w-full"
+          >
+            Tạo giao dịch mới
+          </button>
+        </>
+      )}
     </div>
   )
 }
-

@@ -3,9 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Mail, Lock, Loader2, ArrowLeft } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { cn } from '@/lib/utils'
+import { Eye, EyeOff, Loader2, Mail, Lock } from 'lucide-react'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -17,68 +16,70 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
     setError('')
+    setIsLoading(true)
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({
+      const supabase = createBrowserSupabaseClient()
+      
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (error) {
-        setError(error.message === 'Invalid login credentials' 
-          ? 'Email hoặc mật khẩu không đúng' 
-          : error.message)
+      if (signInError) {
+        if (signInError.message.includes('Invalid login credentials')) {
+          setError('Email hoặc mật khẩu không đúng')
+        } else if (signInError.message.includes('Email not confirmed')) {
+          setError('Vui lòng xác nhận email trước khi đăng nhập')
+        } else {
+          setError(signInError.message)
+        }
+        setIsLoading(false)
         return
       }
 
-      router.push('/dashboard')
-      router.refresh()
+      if (data.user) {
+        router.push('/dashboard')
+        router.refresh()
+      }
     } catch (err) {
-      setError('Đã có lỗi xảy ra. Vui lòng thử lại.')
-    } finally {
+      setError('Có lỗi xảy ra. Vui lòng thử lại.')
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-dark-50 via-primary-50/30 to-accent-50/30 dark:from-dark-900 dark:via-dark-800 dark:to-dark-900">
-      {/* Background Effects */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-400/20 rounded-full blur-3xl" />
-      </div>
-
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-dark-900 dark:via-dark-800 dark:to-dark-900 p-4">
       <div className="w-full max-w-md">
-        {/* Back Link */}
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-dark-600 dark:text-dark-400 hover:text-primary-600 dark:hover:text-primary-400 mb-8 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Về trang chủ
-        </Link>
-
-        {/* Card */}
-        <div className="glass-card p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-lg shadow-primary-500/30">
-              <span className="text-white text-2xl font-bold">O</span>
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">O</span>
             </div>
-            <h1 className="text-2xl font-bold text-dark-900 dark:text-white">
-              Đăng nhập
-            </h1>
-            <p className="text-dark-600 dark:text-dark-400 mt-2">
-              Chào mừng trở lại! Đăng nhập để tiếp tục.
-            </p>
-          </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
+              OTP Resale
+            </span>
+          </Link>
+        </div>
 
-          {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
-            {/* Email */}
+        {/* Form */}
+        <div className="glass-card p-8">
+          <h1 className="text-2xl font-bold text-dark-900 dark:text-white text-center mb-2">
+            Đăng nhập
+          </h1>
+          <p className="text-dark-500 text-center mb-6">
+            Chào mừng bạn quay lại!
+          </p>
+
+          {error && (
+            <div className="mb-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
                 Email
@@ -89,14 +90,13 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@email.com"
+                  placeholder="email@example.com"
                   className="input-field pl-12"
                   required
                 />
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
                 Mật khẩu
@@ -114,60 +114,58 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-dark-400 hover:text-dark-600"
+                  className="absolute right-4 top-1/2 -translate-y-1/2"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5 text-dark-400" />
+                  ) : (
+                    <Eye className="w-5 h-5 text-dark-400" />
+                  )}
                 </button>
               </div>
             </div>
 
-            {/* Forgot Password */}
-            <div className="flex justify-end">
-              <Link 
-                href="/forgot-password" 
-                className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
-              >
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="rounded border-dark-300" />
+                <span className="text-sm text-dark-600 dark:text-dark-400">Nhớ đăng nhập</span>
+              </label>
+              <Link href="/forgot-password" className="text-sm text-primary-600 hover:underline">
                 Quên mật khẩu?
               </Link>
             </div>
 
-            {/* Error */}
-            {error && (
-              <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm animate-fade-in">
-                {error}
-              </div>
-            )}
-
-            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
-              className={cn(
-                "w-full btn-primary py-4",
-                isLoading && "opacity-70 cursor-not-allowed"
-              )}
+              className="btn-primary w-full flex items-center justify-center gap-2"
             >
               {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
+                <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   Đang đăng nhập...
-                </span>
+                </>
               ) : (
                 'Đăng nhập'
               )}
             </button>
           </form>
 
-          {/* Register Link */}
-          <p className="text-center mt-6 text-dark-600 dark:text-dark-400">
+          <p className="mt-6 text-center text-dark-600 dark:text-dark-400">
             Chưa có tài khoản?{' '}
-            <Link href="/register" className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">
+            <Link href="/register" className="text-primary-600 hover:underline font-medium">
               Đăng ký ngay
             </Link>
           </p>
         </div>
+
+        {/* Back to home */}
+        <p className="mt-6 text-center">
+          <Link href="/" className="text-dark-500 hover:text-primary-600 text-sm">
+            ← Quay lại trang chủ
+          </Link>
+        </p>
       </div>
     </div>
   )
 }
-
