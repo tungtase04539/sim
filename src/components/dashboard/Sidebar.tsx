@@ -98,28 +98,28 @@ export default function DashboardSidebar({ user }: SidebarProps) {
         </div>
 
         {/* User Info */}
-        <div className="p-4 border-b border-dark-200 dark:border-dark-700">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-medium">
-              {user.full_name?.charAt(0) || 'U'}
+        <div className="p-4 border-b border-dark-200 dark:border-dark-700 bg-gradient-to-br from-primary-50/50 to-accent-50/50 dark:from-primary-900/10 dark:to-accent-900/10">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold shadow-md">
+              {user.full_name?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-dark-900 dark:text-white truncate">
+              <p className="font-medium text-sm text-dark-900 dark:text-white truncate">
                 {user.full_name || 'User'}
               </p>
-              <p className="text-xl font-bold text-primary-600">
-                {formatCurrency(user.balance || 0)}
+              <p className="text-lg font-bold text-primary-600 dark:text-primary-400">
+                {formatCurrency(user.balance)}
               </p>
             </div>
           </div>
-          <Link href="/dashboard/deposit" className="btn-primary w-full mt-3 flex items-center justify-center gap-2 text-sm">
+          <Link href="/dashboard/deposit" className="btn-primary w-full flex items-center justify-center gap-2 text-xs py-2.5">
             <Wallet className="w-4 h-4" />
             Nạp tiền
           </Link>
         </div>
 
         {/* Menu */}
-        <nav className="p-4 space-y-1 flex-1 overflow-y-auto">
+        <nav className="p-3 space-y-1 flex-1 overflow-y-auto">
           {menuItems.map((item) => {
             const isActive = pathname === item.href || 
               (item.href !== '/dashboard' && pathname.startsWith(item.href))
@@ -130,15 +130,15 @@ export default function DashboardSidebar({ user }: SidebarProps) {
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm",
                   isActive
-                    ? "bg-primary-50 dark:bg-primary-900/20 text-primary-600 font-medium"
+                    ? "bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium shadow-sm"
                     : "text-dark-600 dark:text-dark-400 hover:bg-dark-50 dark:hover:bg-dark-700/50"
                 )}
               >
-                <item.icon className="w-5 h-5" />
+                <item.icon className="w-4 h-4 flex-shrink-0" />
                 <span className="flex-1">{item.label}</span>
-                {isActive && <ChevronRight className="w-4 h-4" />}
+                {isActive && <ChevronRight className="w-3 h-3 flex-shrink-0" />}
               </Link>
             )
           })}

@@ -34,23 +34,23 @@ export default function DashboardHeader({ user }: HeaderProps) {
   const [notifOpen, setNotifOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-40 h-16 glass border-b border-dark-200 dark:border-dark-700 px-6 flex items-center justify-between">
+    <header className="sticky top-0 z-40 h-14 glass border-b border-dark-200/50 dark:border-dark-700/50 px-5 flex items-center justify-between backdrop-blur-sm bg-white/80 dark:bg-dark-800/80">
       {/* Page Title - will be dynamic */}
       <div className="lg:hidden w-10" /> {/* Spacer for mobile menu button */}
       
       <div className="hidden lg:block">
-        <h1 className="text-lg font-semibold text-dark-800 dark:text-white">Dashboard</h1>
+        <h1 className="text-base font-semibold text-dark-800 dark:text-white">Dashboard</h1>
       </div>
 
       {/* Right Section */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {/* Balance Badge */}
         <Link 
           href="/dashboard/deposit"
-          className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-primary-500/10 to-accent-500/10 border border-primary-200 dark:border-primary-800 hover:border-primary-400 transition-colors"
+          className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary-500/10 to-accent-500/10 border border-primary-200/50 dark:border-primary-800/50 hover:border-primary-400 dark:hover:border-primary-600 transition-all hover:shadow-sm"
         >
-          <Wallet className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-          <span className="font-semibold text-primary-600 dark:text-primary-400">
+          <Wallet className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
+          <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
             {formatCurrency(user.balance)}
           </span>
         </Link>
@@ -58,12 +58,13 @@ export default function DashboardHeader({ user }: HeaderProps) {
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-xl bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
+          className="p-2 rounded-lg bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
+          aria-label="Toggle theme"
         >
           {theme === 'dark' ? (
-            <Sun className="w-5 h-5 text-yellow-500" />
+            <Sun className="w-4 h-4 text-yellow-500" />
           ) : (
-            <Moon className="w-5 h-5 text-dark-600" />
+            <Moon className="w-4 h-4 text-dark-600" />
           )}
         </button>
 
@@ -71,11 +72,12 @@ export default function DashboardHeader({ user }: HeaderProps) {
         <div className="relative">
           <button
             onClick={() => setNotifOpen(!notifOpen)}
-            className="relative p-2 rounded-xl bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
+            className="relative p-2 rounded-lg bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
+            aria-label="Notifications"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-4 h-4" />
             {notifications.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold">
                 {notifications.length}
               </span>
             )}
@@ -118,13 +120,14 @@ export default function DashboardHeader({ user }: HeaderProps) {
         <div className="relative">
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="flex items-center gap-2 p-2 rounded-xl bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
+            className="flex items-center gap-2 p-1.5 rounded-lg bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
+            aria-label="User menu"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
-              <User className="w-4 h-4 text-white" />
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-sm">
+              <User className="w-3.5 h-3.5 text-white" />
             </div>
             <ChevronDown className={cn(
-              "w-4 h-4 transition-transform hidden sm:block",
+              "w-3.5 h-3.5 transition-transform hidden sm:block text-dark-500",
               userMenuOpen && "rotate-180"
             )} />
           </button>

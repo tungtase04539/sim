@@ -5,11 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number | null | undefined): string {
+  // Handle null, undefined, NaN, or invalid numbers
+  const numAmount = typeof amount === 'number' && !isNaN(amount) ? amount : 0
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
-  }).format(amount)
+  }).format(numAmount)
 }
 
 export function formatNumber(num: number): string {

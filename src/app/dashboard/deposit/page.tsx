@@ -50,7 +50,10 @@ export default function DepositPage() {
       if (data.success) {
         if (data.status === 'completed') {
           setPaymentStatus('completed')
-          setNewBalance(data.data?.balance_after)
+          const balanceAfter = data.data?.balance_after
+          if (balanceAfter !== undefined && balanceAfter !== null && !isNaN(balanceAfter)) {
+            setNewBalance(balanceAfter)
+          }
         } else if (data.status === 'expired') {
           setPaymentStatus('expired')
         }
@@ -122,7 +125,10 @@ export default function DepositPage() {
       
       if (data.success) {
         setPaymentStatus('completed')
-        setNewBalance(data.data.balance_after)
+        const balanceAfter = data.data?.balance_after
+        if (balanceAfter !== undefined && balanceAfter !== null && !isNaN(balanceAfter)) {
+          setNewBalance(balanceAfter)
+        }
       } else {
         alert('Lỗi: ' + data.error)
       }
@@ -180,22 +186,23 @@ export default function DepositPage() {
 
       {/* Success Message */}
       {paymentStatus === 'completed' && (
-        <div className="glass-card p-8 text-center border-2 border-green-500 bg-green-50 dark:bg-green-900/20">
-          <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-10 h-10 text-green-600" />
+        <div className="glass-card p-6 text-center border-2 border-green-500/50 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl shadow-lg">
+          <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center mx-auto mb-4 shadow-md">
+            <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
           </div>
-          <h2 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-2">
+          <h2 className="text-xl font-bold text-green-700 dark:text-green-400 mb-2">
             Nạp tiền thành công! 🎉
           </h2>
-          <p className="text-green-600 dark:text-green-300 mb-4">
-            Số tiền <strong>{formatCurrency(finalAmount)}</strong> đã được cộng vào tài khoản
+          <p className="text-sm text-green-600 dark:text-green-300 mb-3">
+            Số tiền <strong className="text-base">{formatCurrency(finalAmount)}</strong> đã được cộng vào tài khoản
           </p>
-          {newBalance !== null && (
-            <p className="text-lg">
-              Số dư mới: <strong className="text-green-600">{formatCurrency(newBalance)}</strong>
-            </p>
+          {newBalance !== null && !isNaN(newBalance) && (
+            <div className="mb-4 p-3 rounded-lg bg-white/50 dark:bg-dark-800/50 border border-green-200 dark:border-green-800">
+              <p className="text-xs text-green-600 dark:text-green-400 mb-1">Số dư mới</p>
+              <p className="text-xl font-bold text-green-700 dark:text-green-300">{formatCurrency(newBalance)}</p>
+            </div>
           )}
-          <button onClick={resetDeposit} className="btn-primary mt-6">
+          <button onClick={resetDeposit} className="btn-primary mt-4 text-sm py-2.5 px-6">
             Nạp thêm tiền
           </button>
         </div>
@@ -203,17 +210,17 @@ export default function DepositPage() {
 
       {/* Expired Message */}
       {paymentStatus === 'expired' && (
-        <div className="glass-card p-8 text-center border-2 border-orange-500 bg-orange-50 dark:bg-orange-900/20">
-          <div className="w-20 h-20 rounded-full bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center mx-auto mb-4">
-            <Clock className="w-10 h-10 text-orange-600" />
+        <div className="glass-card p-6 text-center border-2 border-orange-500/50 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-xl shadow-lg">
+          <div className="w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center mx-auto mb-4 shadow-md">
+            <Clock className="w-8 h-8 text-orange-600 dark:text-orange-400" />
           </div>
-          <h2 className="text-2xl font-bold text-orange-700 dark:text-orange-400 mb-2">
+          <h2 className="text-xl font-bold text-orange-700 dark:text-orange-400 mb-2">
             Yêu cầu đã hết hạn
           </h2>
-          <p className="text-orange-600 dark:text-orange-300 mb-4">
+          <p className="text-sm text-orange-600 dark:text-orange-300 mb-4">
             Vui lòng tạo giao dịch mới để tiếp tục
           </p>
-          <button onClick={resetDeposit} className="btn-primary mt-4">
+          <button onClick={resetDeposit} className="btn-primary mt-4 text-sm py-2.5 px-6">
             Tạo giao dịch mới
           </button>
         </div>
