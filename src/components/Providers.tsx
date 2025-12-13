@@ -31,18 +31,31 @@ export function Providers({ children }: { children: React.ReactNode }) {
       const savedTheme = localStorage.getItem('theme') as Theme
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       
+      // Check if dark class is already on html element (from script)
+      const isDark = document.documentElement.classList.contains('dark')
+      
       if (savedTheme) {
         setTheme(savedTheme)
-      } else if (prefersDark) {
+      } else if (isDark || prefersDark) {
         setTheme('dark')
+      } else {
+        setTheme('light')
       }
     }
   }, [])
 
+  // Apply theme to document whenever it changes
   useEffect(() => {
-    if (mounted && typeof window !== 'undefined') {
-      document.documentElement.classList.toggle('dark', theme === 'dark')
-      localStorage.setItem('theme', theme)
+    if (typeof window !== 'undefined') {
+      const root = document.documentElement
+      if (theme === 'dark') {
+        root.classList.add('dark')
+      } else {
+        root.classList.remove('dark')
+      }
+      if (mounted) {
+        localStorage.setItem('theme', theme)
+      }
     }
   }, [theme, mounted])
 
