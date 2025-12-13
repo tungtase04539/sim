@@ -10,11 +10,15 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables')
 }
 
+// TypeScript now knows these are strings
+const SUPABASE_URL: string = supabaseUrl
+const SUPABASE_ANON_KEY: string = supabaseAnonKey
+
 // Create server-side Supabase client with user session
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies()
 
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
+  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
       get(name: string) {
         return cookieStore.get(name)?.value
@@ -43,11 +47,10 @@ export async function createServiceRoleClient() {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is not configured')
   }
 
-  return createClient(supabaseUrl, supabaseServiceRoleKey, {
+  return createClient(SUPABASE_URL, supabaseServiceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
     },
   })
 }
-
