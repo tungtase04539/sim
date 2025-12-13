@@ -99,7 +99,7 @@ export default async function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-card p-5 hover:shadow-lg transition-all border border-dark-200/50 dark:border-dark-700/50">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5 hover:shadow-lg transition-all">
           <div className="flex items-start justify-between mb-4">
             <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-md">
               <Wallet className="w-5 h-5 text-white" />
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <div className="glass-card p-5 hover:shadow-lg transition-all border border-dark-200/50 dark:border-dark-700/50">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5 hover:shadow-lg transition-all">
           <div className="flex items-start justify-between mb-4">
             <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
               <ShoppingCart className="w-5 h-5 text-white" />
@@ -127,7 +127,7 @@ export default async function DashboardPage() {
           <p className="text-2xl font-bold text-dark-900 dark:text-white">{stats.totalOrders}</p>
         </div>
 
-        <div className="glass-card p-5 hover:shadow-lg transition-all border border-dark-200/50 dark:border-dark-700/50">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5 hover:shadow-lg transition-all">
           <div className="flex items-start justify-between mb-4">
             <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-md">
               <CheckCircle2 className="w-5 h-5 text-white" />
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
           <p className="text-2xl font-bold text-dark-900 dark:text-white">{stats.successOrders}</p>
         </div>
 
-        <div className="glass-card p-5 hover:shadow-lg transition-all border border-dark-200/50 dark:border-dark-700/50">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5 hover:shadow-lg transition-all">
           <div className="flex items-start justify-between mb-4">
             <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md">
               <Clock className="w-5 h-5 text-white" />
@@ -157,7 +157,7 @@ export default async function DashboardPage() {
       {/* Recent Orders & Transactions */}
       <div className="grid lg:grid-cols-2 gap-5">
         {/* Recent Orders */}
-        <div className="glass-card p-5 border border-dark-200/50 dark:border-dark-700/50">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-semibold text-dark-900 dark:text-white">Đơn hàng gần đây</h2>
             <Link href="/dashboard/history" className="text-xs text-primary-600 dark:text-primary-400 hover:underline font-medium">
@@ -203,7 +203,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Recent Transactions */}
-        <div className="glass-card p-5 border border-dark-200/50 dark:border-dark-700/50">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-semibold text-dark-900 dark:text-white">Giao dịch gần đây</h2>
             <Link href="/dashboard/transactions" className="text-xs text-primary-600 dark:text-primary-400 hover:underline font-medium">
@@ -251,7 +251,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="glass-card p-5 border border-dark-200/50 dark:border-dark-700/50">
+      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5">
         <h2 className="text-base font-semibold text-dark-900 dark:text-white mb-4">Thao tác nhanh</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Link href="/dashboard/rent" className="flex flex-col items-center p-4 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 text-white hover:shadow-lg hover:shadow-primary-500/30 transition-all hover:scale-105">
