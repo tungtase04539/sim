@@ -89,10 +89,10 @@ export default async function DashboardPage() {
     <div className="space-y-8 animate-fade-in">
       {/* Welcome */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold gradient-text mb-3 drop-shadow-lg">
+        <h1 className="text-4xl font-bold text-primary-700 dark:text-primary-300 mb-3">
           Xin chào, {profile?.full_name || 'User'}! 👋
         </h1>
-        <p className="text-white/80 text-lg drop-shadow-md">
+        <p className="text-gray-700 dark:text-gray-300 text-lg">
           Tổng quan hoạt động tài khoản của bạn
         </p>
       </div>
@@ -108,8 +108,8 @@ export default async function DashboardPage() {
               Nạp thêm <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-          <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-medium">Số dư hiện tại</p>
-          <p className="text-3xl font-bold gradient-text">
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider font-medium">Số dư hiện tại</p>
+          <p className="text-3xl font-bold text-primary-700 dark:text-primary-300">
             {formatCurrency(profile?.balance)}
           </p>
         </div>
@@ -123,8 +123,8 @@ export default async function DashboardPage() {
               Tháng này
             </span>
           </div>
-          <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-medium">Tổng đơn hàng</p>
-          <p className="text-3xl font-bold text-white drop-shadow-lg">{stats.totalOrders}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider font-medium">Tổng đơn hàng</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalOrders}</p>
         </div>
 
         <div className="glass-card-strong p-6 card-hover animate-float" style={{ animationDelay: '0.2s' }}>
@@ -136,8 +136,8 @@ export default async function DashboardPage() {
               <ArrowUpRight className="w-3.5 h-3.5" /> {stats.successRate}%
             </span>
           </div>
-          <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-medium">Thành công</p>
-          <p className="text-3xl font-bold text-white drop-shadow-lg">{stats.successOrders}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider font-medium">Thành công</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.successOrders}</p>
         </div>
 
         <div className="glass-card-strong p-6 card-hover animate-float" style={{ animationDelay: '0.3s' }}>
@@ -149,8 +149,8 @@ export default async function DashboardPage() {
               Xem
             </Link>
           </div>
-          <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-medium">Đang chờ</p>
-          <p className="text-3xl font-bold text-white drop-shadow-lg">{stats.pendingOrders}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider font-medium">Đang chờ</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.pendingOrders}</p>
         </div>
       </div>
 
