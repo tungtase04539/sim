@@ -74,40 +74,40 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-dark-900 dark:text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-dark-900 dark:text-white flex items-center gap-3 mb-2">
             <History className="w-8 h-8 text-primary-500" />
             Lịch sử thuê OTP
           </h1>
-          <p className="text-dark-600 dark:text-dark-400 mt-1">
+          <p className="text-dark-500 dark:text-dark-400">
             Xem lại tất cả đơn hàng đã thuê
           </p>
         </div>
-        <button onClick={fetchOrders} className="btn-secondary flex items-center gap-2">
-          <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+        <button onClick={fetchOrders} className="px-4 py-2.5 bg-white dark:bg-dark-800 border border-dark-200 dark:border-dark-700 rounded-xl hover:bg-dark-50 dark:hover:bg-dark-700 transition-all flex items-center gap-2 text-sm font-medium shadow-sm">
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           Làm mới
         </button>
       </div>
 
       {/* Filters */}
-      <div className="glass-card p-4">
+      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-400" />
             <input
               type="text"
               placeholder="Tìm theo SĐT, dịch vụ, OTP..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input-field pl-10"
+              className="w-full px-4 py-3 pl-11 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="input-field w-full sm:w-auto"
+            className="w-full sm:w-auto px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
           >
             <option value="all">Tất cả trạng thái</option>
             <option value="success">Thành công</option>
@@ -119,76 +119,79 @@ export default function HistoryPage() {
       </div>
 
       {/* Orders List */}
-      <div className="glass-card overflow-hidden">
+      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-10 h-10 animate-spin text-primary-500" />
           </div>
         ) : filteredOrders.length === 0 ? (
-          <div className="text-center py-12 text-dark-500">
-            <History className="w-16 h-16 mx-auto mb-4 opacity-50" />
-            <p className="text-lg font-medium">Chưa có đơn hàng nào</p>
+          <div className="text-center py-16 text-dark-400">
+            <History className="w-16 h-16 mx-auto mb-4 opacity-40" />
+            <p className="font-medium mb-1">Chưa có đơn hàng nào</p>
             <p className="text-sm">Hãy thuê OTP để bắt đầu</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-dark-50 dark:bg-dark-800">
+              <thead className="bg-gradient-to-r from-dark-50 to-dark-100 dark:from-dark-800 dark:to-dark-700">
                 <tr>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-dark-500">Dịch vụ</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-dark-500">Số điện thoại</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-dark-500">OTP</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-dark-500">Giá</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-dark-500">Trạng thái</th>
-                  <th className="text-left px-6 py-4 text-sm font-medium text-dark-500">Thời gian</th>
+                  <th className="text-left px-6 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Dịch vụ</th>
+                  <th className="text-left px-6 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Số điện thoại</th>
+                  <th className="text-left px-6 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">OTP</th>
+                  <th className="text-left px-6 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Giá</th>
+                  <th className="text-left px-6 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Trạng thái</th>
+                  <th className="text-left px-6 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Thời gian</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredOrders.map((order, i) => (
-                  <tr key={order.id} className={cn("table-row", i % 2 === 0 && "bg-dark-50/50 dark:bg-dark-800/30")}>
+                  <tr key={order.id} className={cn(
+                    "border-b border-dark-200/50 dark:border-dark-700/50 hover:bg-dark-50/50 dark:hover:bg-dark-800/30 transition-colors",
+                    i % 2 === 0 && "bg-dark-50/20 dark:bg-dark-800/10"
+                  )}>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{order.countries?.flag || '🌍'}</span>
+                        <span className="text-xl">{order.countries?.flag || '🌍'}</span>
                         <div>
-                          <p className="font-medium text-dark-900 dark:text-white">{order.services?.name || 'Service'}</p>
-                          <p className="text-xs text-dark-500">{order.countries?.name}</p>
+                          <p className="font-medium text-sm text-dark-900 dark:text-white">{order.services?.name || 'Service'}</p>
+                          <p className="text-xs text-dark-500 dark:text-dark-400">{order.countries?.name}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono">{order.phone_number}</span>
+                        <span className="font-mono text-sm text-dark-700 dark:text-dark-300">{order.phone_number}</span>
                         <button 
                           onClick={() => copyToClipboard(order.phone_number, order.id + '-phone')}
-                          className="text-dark-400 hover:text-primary-600"
+                          className="p-1.5 rounded-lg hover:bg-dark-100 dark:hover:bg-dark-700 transition-colors"
                         >
-                          {copied === order.id + '-phone' ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                          {copied === order.id + '-phone' ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-dark-400" />}
                         </button>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       {order.otp_code ? (
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-green-600">{order.otp_code}</span>
+                          <span className="font-mono font-bold text-sm text-green-600 dark:text-green-400">{order.otp_code}</span>
                           <button 
                             onClick={() => copyToClipboard(order.otp_code!, order.id + '-otp')}
-                            className="text-dark-400 hover:text-primary-600"
+                            className="p-1.5 rounded-lg hover:bg-dark-100 dark:hover:bg-dark-700 transition-colors"
                           >
-                            {copied === order.id + '-otp' ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                            {copied === order.id + '-otp' ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-dark-400" />}
                           </button>
                         </div>
                       ) : order.status === 'waiting' ? (
-                        <span className="text-orange-500 flex items-center gap-1">
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                        <span className="text-orange-500 dark:text-orange-400 flex items-center gap-1 text-sm">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           Đang chờ...
                         </span>
                       ) : (
-                        <span className="text-dark-400">-</span>
+                        <span className="text-dark-400 text-sm">-</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-dark-600">{formatCurrency(order.price)}</td>
+                    <td className="px-6 py-4 text-dark-700 dark:text-dark-300 font-medium text-sm">{formatCurrency(order.price)}</td>
                     <td className="px-6 py-4">{getStatusBadge(order.status)}</td>
-                    <td className="px-6 py-4 text-dark-500 text-sm">{formatDate(order.created_at)}</td>
+                    <td className="px-6 py-4 text-dark-500 dark:text-dark-400 text-xs">{formatDate(order.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

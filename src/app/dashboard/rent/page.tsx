@@ -177,41 +177,41 @@ export default function RentOTPPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-dark-900 dark:text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-dark-900 dark:text-white flex items-center gap-3 mb-2">
             <Phone className="w-8 h-8 text-primary-500" />
             Thuê SIM nhận OTP
           </h1>
-          <p className="text-dark-600 dark:text-dark-400 mt-1">
+          <p className="text-dark-500 dark:text-dark-400">
             Chọn dịch vụ và quốc gia để thuê số nhận OTP
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-sm text-dark-500">Số dư</p>
-          <p className="text-2xl font-bold text-primary-600">{formatCurrency(balance)}</p>
+        <div className="text-right bg-gradient-to-br from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 px-5 py-3 rounded-xl border border-primary-200 dark:border-primary-800">
+          <p className="text-xs text-dark-500 dark:text-dark-400 mb-1 font-medium">Số dư</p>
+          <p className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">{formatCurrency(balance)}</p>
         </div>
       </div>
 
       {/* Activation Form */}
-      <div className="glass-card p-6">
-        <h2 className="text-lg font-semibold text-dark-900 dark:text-white mb-4 flex items-center gap-2">
-          <div className="w-2 h-6 bg-primary-500 rounded-full"></div>
+      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-6">
+        <h2 className="text-base font-semibold text-dark-900 dark:text-white mb-5 flex items-center gap-2">
+          <div className="w-1.5 h-5 bg-gradient-to-b from-primary-500 to-blue-500 rounded-full"></div>
           ACTIVATIONS
         </h2>
 
         <div className="grid md:grid-cols-3 gap-4 mb-6">
           {/* Country */}
           <div>
-            <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
+            <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
               Country
             </label>
             <select
               value={selectedCountry.id}
               onChange={(e) => setSelectedCountry(COUNTRIES.find(c => c.id === e.target.value) || COUNTRIES[0])}
-              className="input-field"
+              className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
             >
               {COUNTRIES.map(country => (
                 <option key={country.id} value={country.id}>
@@ -223,23 +223,23 @@ export default function RentOTPPage() {
 
           {/* Operator */}
           <div>
-            <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
+            <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
               Operator
             </label>
-            <select className="input-field">
+            <select className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all">
               <option>any</option>
             </select>
           </div>
 
           {/* Service */}
           <div>
-            <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
+            <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
               Service
             </label>
             <select
               value={selectedService?.id || ''}
               onChange={(e) => setSelectedService(SERVICES.find(s => s.id === e.target.value) || null)}
-              className="input-field"
+              className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
             >
               <option value="">-- Chọn dịch vụ --</option>
               {SERVICES.map(service => (
@@ -255,7 +255,7 @@ export default function RentOTPPage() {
         <button
           onClick={handleOrder}
           disabled={!selectedService || isOrdering || balance < (selectedService?.price || 0)}
-          className="btn-primary w-full md:w-auto flex items-center justify-center gap-2"
+          className="w-full md:w-auto bg-gradient-to-r from-primary-600 to-blue-600 hover:from-primary-700 hover:to-blue-700 text-white font-semibold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isOrdering ? (
             <>
@@ -276,14 +276,14 @@ export default function RentOTPPage() {
       </div>
 
       {/* My Orders */}
-      <div className="glass-card overflow-hidden">
-        <div className="p-4 bg-primary-600 text-white flex items-center justify-between">
-          <h2 className="font-semibold flex items-center gap-2">
+      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 overflow-hidden">
+        <div className="p-5 bg-gradient-to-r from-primary-600 to-blue-600 text-white flex items-center justify-between">
+          <h2 className="font-semibold flex items-center gap-2 text-base">
             MY ORDERS ({orders.length})
           </h2>
           <button 
             onClick={fetchOrders} 
-            className="flex items-center gap-1 text-sm opacity-80 hover:opacity-100 transition-opacity"
+            className="flex items-center gap-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-all"
           >
             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
             Refresh
@@ -291,86 +291,87 @@ export default function RentOTPPage() {
         </div>
 
         {isLoading ? (
-          <div className="p-12 text-center">
-            <Loader2 className="w-8 h-8 mx-auto mb-4 animate-spin text-primary-500" />
-            <p className="text-dark-500">Đang tải lịch sử...</p>
+          <div className="p-16 text-center">
+            <Loader2 className="w-10 h-10 mx-auto mb-4 animate-spin text-primary-500" />
+            <p className="text-dark-500 dark:text-dark-400 text-sm">Đang tải lịch sử...</p>
           </div>
         ) : orders.length === 0 ? (
-          <div className="p-12 text-center text-dark-500">
+          <div className="p-16 text-center text-dark-400">
             <Phone className="w-16 h-16 mx-auto mb-4 opacity-30" />
-            <p>Chưa có đơn hàng nào</p>
+            <p className="font-medium mb-1">Chưa có đơn hàng nào</p>
             <p className="text-sm">Chọn dịch vụ và quốc gia để bắt đầu thuê OTP</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-dark-100 dark:bg-dark-800">
+              <thead className="bg-gradient-to-r from-dark-50 to-dark-100 dark:from-dark-800 dark:to-dark-700">
                 <tr>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-dark-600">Code</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-dark-600">Date</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-dark-600">Service</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-dark-600">Phone</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-dark-600">OTP</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-dark-600">Message</th>
-                  <th className="text-right px-4 py-3 text-sm font-medium text-dark-600">Price</th>
-                  <th className="text-center px-4 py-3 text-sm font-medium text-dark-600">Status</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Code</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Date</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Service</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Phone</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">OTP</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Message</th>
+                  <th className="text-right px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Price</th>
+                  <th className="text-center px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order) => (
+                {orders.map((order, idx) => (
                   <tr key={order.id} className={cn(
-                    "border-b border-dark-200 dark:border-dark-700 hover:bg-dark-50 dark:hover:bg-dark-800/50 transition-colors",
-                    getStatusBgColor(order.status)
+                    "border-b border-dark-200/50 dark:border-dark-700/50 hover:bg-dark-50/50 dark:hover:bg-dark-800/30 transition-colors",
+                    getStatusBgColor(order.status),
+                    idx % 2 === 0 && "bg-dark-50/20 dark:bg-dark-800/10"
                   )}>
-                    <td className="px-4 py-3 font-mono text-sm">{order.code}</td>
-                    <td className="px-4 py-3 text-sm text-dark-500">
+                    <td className="px-5 py-4 font-mono text-xs font-medium text-dark-700 dark:text-dark-300">{order.code}</td>
+                    <td className="px-5 py-4 text-xs text-dark-500 dark:text-dark-400">
                       {new Date(order.created_at).toLocaleString('vi-VN')}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="font-medium">{order.service}</span>
+                    <td className="px-5 py-4">
+                      <span className="font-medium text-sm text-dark-900 dark:text-white">{order.service}</span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono bg-primary-100 dark:bg-primary-900/30 px-2 py-1 rounded text-primary-700 dark:text-primary-300 text-sm">
+                        <span className="font-mono bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/30 dark:to-blue-900/30 px-2.5 py-1 rounded-lg text-primary-700 dark:text-primary-300 text-xs font-medium border border-primary-200 dark:border-primary-800">
                           {order.phone_number}
                         </span>
                         <button
                           onClick={() => copyToClipboard(order.phone_number, order.id + '-phone')}
-                          className="px-2 py-1 bg-primary-500 text-white text-xs rounded hover:bg-primary-600 transition-colors"
+                          className="px-2 py-1 bg-primary-500 hover:bg-primary-600 text-white text-xs rounded-lg transition-all shadow-sm hover:shadow"
                         >
                           {copied === order.id + '-phone' ? '✓' : 'Copy'}
                         </button>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-4">
                       {order.otp_code ? (
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded text-green-700 dark:text-green-300">
+                          <span className="font-mono font-bold bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 px-2.5 py-1 rounded-lg text-green-700 dark:text-green-300 text-xs border border-green-200 dark:border-green-800">
                             {order.otp_code}
                           </span>
                           <button
                             onClick={() => copyToClipboard(order.otp_code!, order.id + '-otp')}
-                            className="px-2 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
+                            className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-xs rounded-lg transition-all shadow-sm hover:shadow"
                           >
                             {copied === order.id + '-otp' ? '✓' : 'Copy'}
                           </button>
                         </div>
                       ) : order.status === 'waiting' || order.status === 'pending' ? (
-                        <span className="flex items-center gap-2 text-orange-600">
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                        <span className="flex items-center gap-2 text-orange-600 dark:text-orange-400 text-xs">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           Waiting...
                         </span>
                       ) : (
-                        <span className="text-dark-400">-</span>
+                        <span className="text-dark-400 text-xs">-</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-dark-600 max-w-xs truncate">
+                    <td className="px-5 py-4 text-xs text-dark-600 dark:text-dark-400 max-w-xs truncate">
                       {order.sms_content || '-'}
                     </td>
-                    <td className="px-4 py-3 text-right font-medium text-primary-600">
+                    <td className="px-5 py-4 text-right font-semibold text-primary-600 dark:text-primary-400 text-sm">
                       {formatCurrency(order.price)}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-4">
                       <div className="flex justify-center">
                         {getStatusIcon(order.status)}
                       </div>

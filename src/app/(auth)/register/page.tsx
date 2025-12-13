@@ -133,115 +133,115 @@ export default function RegisterPage() {
         </div>
 
         {/* Form */}
-        <div className="glass-card p-8">
-          <h1 className="text-2xl font-bold text-dark-900 dark:text-white text-center mb-2">
+        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-xl border border-dark-200/50 dark:border-dark-700/50 p-8">
+          <h1 className="text-3xl font-bold text-dark-900 dark:text-white text-center mb-2">
             Đăng ký tài khoản
           </h1>
-          <p className="text-dark-500 text-center mb-6">
+          <p className="text-dark-500 dark:text-dark-400 text-center mb-8">
             Tạo tài khoản để bắt đầu sử dụng
           </p>
 
           {error && (
-            <div className="mb-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm">
+            <div className="mb-5 p-4 rounded-xl bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-2 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-medium">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleRegister} className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
+              <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
                 Họ và tên
               </label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-400" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-400" />
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Nguyễn Văn A"
-                  className="input-field pl-12"
+                  className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
+              <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-400" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-400" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="input-field pl-12"
+                  className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
+              <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
                 Mật khẩu
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="input-field pl-12 pr-12"
+                  className="w-full px-4 py-3 pl-12 pr-12 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   required
                   minLength={6}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-dark-100 dark:hover:bg-dark-700 transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5 text-dark-400" />
+                    <EyeOff className="w-4 h-4 text-dark-400" />
                   ) : (
-                    <Eye className="w-5 h-5 text-dark-400" />
+                    <Eye className="w-4 h-4 text-dark-400" />
                   )}
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-dark-700 dark:text-dark-300 mb-2">
+              <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
                 Xác nhận mật khẩu
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="input-field pl-12"
+                  className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                   required
                 />
               </div>
             </div>
 
             <div className="flex items-start gap-2">
-              <input type="checkbox" id="terms" className="rounded border-dark-300 mt-1" required />
-              <label htmlFor="terms" className="text-sm text-dark-600 dark:text-dark-400">
+              <input type="checkbox" id="terms" className="rounded border-dark-300 mt-1 w-4 h-4" required />
+              <label htmlFor="terms" className="text-xs text-dark-600 dark:text-dark-400">
                 Tôi đồng ý với{' '}
-                <Link href="/terms" className="text-primary-600 hover:underline">Điều khoản dịch vụ</Link>
+                <Link href="/terms" className="text-primary-600 hover:underline font-medium">Điều khoản dịch vụ</Link>
                 {' '}và{' '}
-                <Link href="/privacy" className="text-primary-600 hover:underline">Chính sách bảo mật</Link>
+                <Link href="/privacy" className="text-primary-600 hover:underline font-medium">Chính sách bảo mật</Link>
               </label>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-primary w-full flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-primary-600 to-blue-600 hover:from-primary-700 hover:to-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
