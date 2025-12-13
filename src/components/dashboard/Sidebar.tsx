@@ -74,52 +74,52 @@ export default function DashboardSidebar({ user }: SidebarProps) {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 left-0 h-full w-72 bg-white dark:bg-dark-800 border-r border-dark-200 dark:border-dark-700 z-50 transition-transform duration-300",
+        "fixed top-0 left-0 h-full w-72 glass-card-strong border-r border-white/20 z-50 transition-transform duration-300 backdrop-blur-2xl",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         {/* Close Button (Mobile) */}
         <button
           onClick={() => setIsOpen(false)}
-          className="lg:hidden absolute top-4 right-4 p-1 rounded-lg hover:bg-dark-100 dark:hover:bg-dark-700"
+          className="lg:hidden absolute top-4 right-4 p-2 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-110"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 text-white" />
         </button>
 
         {/* Logo */}
-        <div className="p-6 border-b border-dark-200 dark:border-dark-700">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">O</span>
+        <div className="p-6 border-b border-white/20">
+          <Link href="/dashboard" className="flex items-center gap-3 group">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform animate-pulse-glow">
+              <span className="text-white font-bold text-2xl drop-shadow-lg">O</span>
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold gradient-text">
               OTP Resale
             </span>
           </Link>
         </div>
 
         {/* User Info */}
-        <div className="p-4 border-b border-dark-200 dark:border-dark-700 bg-gradient-to-br from-primary-50/50 to-accent-50/50 dark:from-primary-900/10 dark:to-accent-900/10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold shadow-md">
+        <div className="p-5 border-b border-white/20 backdrop-blur-xl bg-gradient-to-br from-primary-500/20 via-blue-500/20 to-purple-500/20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-2xl animate-float">
               {user.full_name?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm text-dark-900 dark:text-white truncate">
+              <p className="font-semibold text-sm text-white truncate drop-shadow-md">
                 {user.full_name || 'User'}
               </p>
-              <p className="text-lg font-bold text-primary-600 dark:text-primary-400">
+              <p className="text-xl font-bold gradient-text">
                 {formatCurrency(user.balance)}
               </p>
             </div>
           </div>
-          <Link href="/dashboard/deposit" className="btn-primary w-full flex items-center justify-center gap-2 text-xs py-2.5">
+          <Link href="/dashboard/deposit" className="btn-primary w-full flex items-center justify-center gap-2 text-sm py-3">
             <Wallet className="w-4 h-4" />
             Nạp tiền
           </Link>
         </div>
 
         {/* Menu */}
-        <nav className="p-3 space-y-1 flex-1 overflow-y-auto">
+        <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
           {menuItems.map((item) => {
             const isActive = pathname === item.href || 
               (item.href !== '/dashboard' && pathname.startsWith(item.href))
@@ -130,33 +130,36 @@ export default function DashboardSidebar({ user }: SidebarProps) {
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm",
+                  "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all text-sm font-medium group",
                   isActive
-                    ? "bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium shadow-sm"
-                    : "text-dark-600 dark:text-dark-400 hover:bg-dark-50 dark:hover:bg-dark-700/50"
+                    ? "backdrop-blur-xl bg-gradient-to-r from-primary-500/30 via-blue-500/30 to-purple-500/30 text-white shadow-xl border border-white/30 glow-effect"
+                    : "text-white/80 hover:bg-white/10 hover:text-white hover:scale-105 hover:shadow-lg border border-transparent hover:border-white/20"
                 )}
               >
-                <item.icon className="w-4 h-4 flex-shrink-0" />
+                <item.icon className={cn(
+                  "w-5 h-5 flex-shrink-0 transition-transform",
+                  isActive ? "drop-shadow-lg" : "group-hover:scale-110"
+                )} />
                 <span className="flex-1">{item.label}</span>
-                {isActive && <ChevronRight className="w-3 h-3 flex-shrink-0" />}
+                {isActive && <ChevronRight className="w-4 h-4 flex-shrink-0 animate-float" />}
               </Link>
             )
           })}
         </nav>
 
         {/* Logout */}
-        <div className="p-4 border-t border-dark-200 dark:border-dark-700">
+        <div className="p-4 border-t border-white/20">
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl w-full text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            className="flex items-center gap-3 px-4 py-3 rounded-2xl w-full backdrop-blur-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 transition-all border border-red-500/30 hover:border-red-500/50 hover:scale-105 hover:shadow-xl disabled:opacity-50"
           >
             {isLoggingOut ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <LogOut className="w-5 h-5" />
             )}
-            <span>{isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}</span>
+            <span className="font-semibold">{isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}</span>
           </button>
         </div>
       </aside>

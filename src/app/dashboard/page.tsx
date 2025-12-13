@@ -86,115 +86,115 @@ export default async function DashboardPage() {
   const { profile, orders, transactions, stats } = await getDashboardData(user.id)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       {/* Welcome */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-dark-900 dark:text-white mb-2">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold gradient-text mb-3 drop-shadow-lg">
           Xin chào, {profile?.full_name || 'User'}! 👋
         </h1>
-        <p className="text-dark-500 dark:text-dark-400">
+        <p className="text-white/80 text-lg drop-shadow-md">
           Tổng quan hoạt động tài khoản của bạn
         </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5 hover:shadow-lg transition-all">
-          <div className="flex items-start justify-between mb-4">
-            <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-md">
-              <Wallet className="w-5 h-5 text-white" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="glass-card-strong p-6 card-hover animate-float" style={{ animationDelay: '0s' }}>
+          <div className="flex items-start justify-between mb-5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-2xl animate-pulse-glow">
+              <Wallet className="w-7 h-7 text-white drop-shadow-lg" />
             </div>
-            <Link href="/dashboard/deposit" className="text-primary-600 dark:text-primary-400 text-xs font-medium hover:underline flex items-center gap-1 px-2 py-1 rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors">
-              Nạp thêm <ArrowUpRight className="w-3 h-3" />
+            <Link href="/dashboard/deposit" className="text-xs font-semibold text-white/80 hover:text-white hover:underline flex items-center gap-1 px-3 py-1.5 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all">
+              Nạp thêm <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-          <p className="text-xs text-dark-500 dark:text-dark-400 mb-1">Số dư hiện tại</p>
-          <p className="text-2xl font-bold text-dark-900 dark:text-white">
+          <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-medium">Số dư hiện tại</p>
+          <p className="text-3xl font-bold gradient-text">
             {formatCurrency(profile?.balance)}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5 hover:shadow-lg transition-all">
-          <div className="flex items-start justify-between mb-4">
-            <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
-              <ShoppingCart className="w-5 h-5 text-white" />
+        <div className="glass-card-strong p-6 card-hover animate-float" style={{ animationDelay: '0.1s' }}>
+          <div className="flex items-start justify-between mb-5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-500 flex items-center justify-center shadow-2xl animate-pulse-glow">
+              <ShoppingCart className="w-7 h-7 text-white drop-shadow-lg" />
             </div>
-            <span className="text-xs px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-md font-medium">
+            <span className="text-xs px-3 py-1.5 backdrop-blur-xl bg-blue-500/20 text-white rounded-xl font-semibold border border-white/20">
               Tháng này
             </span>
           </div>
-          <p className="text-xs text-dark-500 dark:text-dark-400 mb-1">Tổng đơn hàng</p>
-          <p className="text-2xl font-bold text-dark-900 dark:text-white">{stats.totalOrders}</p>
+          <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-medium">Tổng đơn hàng</p>
+          <p className="text-3xl font-bold text-white drop-shadow-lg">{stats.totalOrders}</p>
         </div>
 
-        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5 hover:shadow-lg transition-all">
-          <div className="flex items-start justify-between mb-4">
-            <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-md">
-              <CheckCircle2 className="w-5 h-5 text-white" />
+        <div className="glass-card-strong p-6 card-hover animate-float" style={{ animationDelay: '0.2s' }}>
+          <div className="flex items-start justify-between mb-5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 flex items-center justify-center shadow-2xl animate-pulse-glow">
+              <CheckCircle2 className="w-7 h-7 text-white drop-shadow-lg" />
             </div>
-            <span className="text-xs px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-md font-medium flex items-center gap-1">
-              <ArrowUpRight className="w-3 h-3" /> {stats.successRate}%
+            <span className="text-xs px-3 py-1.5 backdrop-blur-xl bg-green-500/20 text-white rounded-xl font-semibold border border-white/20 flex items-center gap-1">
+              <ArrowUpRight className="w-3.5 h-3.5" /> {stats.successRate}%
             </span>
           </div>
-          <p className="text-xs text-dark-500 dark:text-dark-400 mb-1">Thành công</p>
-          <p className="text-2xl font-bold text-dark-900 dark:text-white">{stats.successOrders}</p>
+          <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-medium">Thành công</p>
+          <p className="text-3xl font-bold text-white drop-shadow-lg">{stats.successOrders}</p>
         </div>
 
-        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5 hover:shadow-lg transition-all">
-          <div className="flex items-start justify-between mb-4">
-            <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md">
-              <Clock className="w-5 h-5 text-white" />
+        <div className="glass-card-strong p-6 card-hover animate-float" style={{ animationDelay: '0.3s' }}>
+          <div className="flex items-start justify-between mb-5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 flex items-center justify-center shadow-2xl animate-pulse-glow">
+              <Clock className="w-7 h-7 text-white drop-shadow-lg" />
             </div>
-            <Link href="/dashboard/history" className="text-xs text-orange-600 dark:text-orange-400 font-medium hover:underline px-2 py-1 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors">
+            <Link href="/dashboard/history" className="text-xs font-semibold text-white/80 hover:text-white hover:underline px-3 py-1.5 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all">
               Xem
             </Link>
           </div>
-          <p className="text-xs text-dark-500 dark:text-dark-400 mb-1">Đang chờ</p>
-          <p className="text-2xl font-bold text-dark-900 dark:text-white">{stats.pendingOrders}</p>
+          <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-medium">Đang chờ</p>
+          <p className="text-3xl font-bold text-white drop-shadow-lg">{stats.pendingOrders}</p>
         </div>
       </div>
 
       {/* Recent Orders & Transactions */}
-      <div className="grid lg:grid-cols-2 gap-5">
+      <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Orders */}
-        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-base font-semibold text-dark-900 dark:text-white">Đơn hàng gần đây</h2>
-            <Link href="/dashboard/history" className="text-xs text-primary-600 dark:text-primary-400 hover:underline font-medium">
+        <div className="glass-card-strong p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-bold text-white drop-shadow-md">Đơn hàng gần đây</h2>
+            <Link href="/dashboard/history" className="text-xs font-semibold gradient-text hover:underline">
               Xem tất cả →
             </Link>
           </div>
           
           {orders.length === 0 ? (
-            <div className="text-center py-12 text-dark-400">
-              <Phone className="w-10 h-10 mx-auto mb-3 opacity-40" />
-              <p className="text-sm mb-2">Chưa có đơn hàng nào</p>
-              <Link href="/dashboard/rent" className="text-xs text-primary-600 hover:underline font-medium">
+            <div className="text-center py-16 text-white/60">
+              <Phone className="w-16 h-16 mx-auto mb-4 opacity-40" />
+              <p className="text-sm mb-3 font-medium">Chưa có đơn hàng nào</p>
+              <Link href="/dashboard/rent" className="text-xs font-semibold gradient-text hover:underline">
                 Thuê OTP ngay →
               </Link>
             </div>
           ) : (
-            <div className="space-y-2">
-              {orders.map((order: any) => (
-                <div key={order.id} className="flex items-center justify-between p-3 rounded-lg bg-dark-50/50 dark:bg-dark-700/30 hover:bg-dark-100 dark:hover:bg-dark-700/50 transition-colors border border-dark-200/30 dark:border-dark-700/30">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="text-xl flex-shrink-0">{order.countries?.flag || '🌍'}</div>
+            <div className="space-y-3">
+              {orders.map((order: any, index: number) => (
+                <div key={order.id} className="flex items-center justify-between p-4 rounded-2xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-[1.02] hover:shadow-xl animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="text-2xl flex-shrink-0 drop-shadow-lg">{order.countries?.flag || '🌍'}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm text-dark-900 dark:text-white truncate">
+                      <p className="font-semibold text-sm text-white truncate drop-shadow-sm">
                         {order.services?.name || 'Service'}
                       </p>
-                      <p className="text-xs text-dark-500 truncate">{order.phone_number || 'N/A'}</p>
+                      <p className="text-xs text-white/70 truncate mt-1">{order.phone_number || 'N/A'}</p>
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0 ml-2">
+                  <div className="text-right flex-shrink-0 ml-3">
                     {order.otp_code ? (
-                      <p className="font-mono font-bold text-sm text-green-600 dark:text-green-400">{order.otp_code}</p>
+                      <p className="font-mono font-bold text-base text-green-300 drop-shadow-lg">{order.otp_code}</p>
                     ) : order.status === 'waiting' ? (
-                      <p className="text-xs text-orange-600 dark:text-orange-400">Đang chờ...</p>
+                      <p className="text-xs text-orange-300 font-medium">Đang chờ...</p>
                     ) : (
-                      <p className="text-xs text-red-600 dark:text-red-400">Thất bại</p>
+                      <p className="text-xs text-red-300 font-medium">Thất bại</p>
                     )}
-                    <p className="text-xs text-dark-400 mt-0.5">{formatShortDate(order.created_at)}</p>
+                    <p className="text-xs text-white/60 mt-1">{formatShortDate(order.created_at)}</p>
                   </div>
                 </div>
               ))}
@@ -203,44 +203,44 @@ export default async function DashboardPage() {
         </div>
 
         {/* Recent Transactions */}
-        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-base font-semibold text-dark-900 dark:text-white">Giao dịch gần đây</h2>
-            <Link href="/dashboard/transactions" className="text-xs text-primary-600 dark:text-primary-400 hover:underline font-medium">
+        <div className="glass-card-strong p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-bold text-white drop-shadow-md">Giao dịch gần đây</h2>
+            <Link href="/dashboard/transactions" className="text-xs font-semibold gradient-text hover:underline">
               Xem tất cả →
             </Link>
           </div>
           
           {transactions.length === 0 ? (
-            <div className="text-center py-12 text-dark-400">
-              <CreditCard className="w-10 h-10 mx-auto mb-3 opacity-40" />
-              <p className="text-sm mb-2">Chưa có giao dịch nào</p>
-              <Link href="/dashboard/deposit" className="text-xs text-primary-600 hover:underline font-medium">
+            <div className="text-center py-16 text-white/60">
+              <CreditCard className="w-16 h-16 mx-auto mb-4 opacity-40" />
+              <p className="text-sm mb-3 font-medium">Chưa có giao dịch nào</p>
+              <Link href="/dashboard/deposit" className="text-xs font-semibold gradient-text hover:underline">
                 Nạp tiền ngay →
               </Link>
             </div>
           ) : (
-            <div className="space-y-2">
-              {transactions.map((tx: any) => (
-                <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg bg-dark-50/50 dark:bg-dark-700/30 hover:bg-dark-100 dark:hover:bg-dark-700/50 transition-colors border border-dark-200/30 dark:border-dark-700/30">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      tx.type === 'deposit' ? 'bg-green-100 dark:bg-green-900/30' :
-                      tx.type === 'refund' ? 'bg-purple-100 dark:bg-purple-900/30' :
-                      'bg-red-100 dark:bg-red-900/30'
+            <div className="space-y-3">
+              {transactions.map((tx: any, index: number) => (
+                <div key={tx.id} className="flex items-center justify-between p-4 rounded-2xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-[1.02] hover:shadow-xl animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg ${
+                      tx.type === 'deposit' ? 'bg-gradient-to-br from-green-500/30 to-emerald-500/30 border border-green-400/30' :
+                      tx.type === 'refund' ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-purple-400/30' :
+                      'bg-gradient-to-br from-red-500/30 to-orange-500/30 border border-red-400/30'
                     }`}>
                       {tx.amount > 0 ? (
-                        <ArrowDownRight className={`w-4 h-4 ${tx.type === 'deposit' ? 'text-green-600 dark:text-green-400' : 'text-purple-600 dark:text-purple-400'}`} />
+                        <ArrowDownRight className={`w-5 h-5 ${tx.type === 'deposit' ? 'text-green-300' : 'text-purple-300'} drop-shadow-lg`} />
                       ) : (
-                        <ArrowUpRight className="w-4 h-4 text-red-600 dark:text-red-400" />
+                        <ArrowUpRight className="w-5 h-5 text-red-300 drop-shadow-lg" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm text-dark-900 dark:text-white truncate">{tx.description || 'Giao dịch'}</p>
-                      <p className="text-xs text-dark-500">{formatShortDate(tx.created_at)}</p>
+                      <p className="font-semibold text-sm text-white truncate drop-shadow-sm">{tx.description || 'Giao dịch'}</p>
+                      <p className="text-xs text-white/70 mt-1">{formatShortDate(tx.created_at)}</p>
                     </div>
                   </div>
-                  <p className={`font-semibold text-sm flex-shrink-0 ml-2 ${tx.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <p className={`font-bold text-base flex-shrink-0 ml-3 drop-shadow-lg ${tx.amount > 0 ? 'text-green-300' : 'text-red-300'}`}>
                     {tx.amount > 0 ? '+' : ''}{formatCurrency(tx.amount)}
                   </p>
                 </div>
@@ -251,24 +251,24 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-5">
-        <h2 className="text-base font-semibold text-dark-900 dark:text-white mb-4">Thao tác nhanh</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <Link href="/dashboard/rent" className="flex flex-col items-center p-4 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 text-white hover:shadow-lg hover:shadow-primary-500/30 transition-all hover:scale-105">
-            <Phone className="w-6 h-6 mb-2" />
-            <span className="text-sm font-medium">Thuê OTP</span>
+      <div className="glass-card-strong p-6">
+        <h2 className="text-lg font-bold text-white drop-shadow-md mb-6">Thao tác nhanh</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <Link href="/dashboard/rent" className="group flex flex-col items-center p-6 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-primary-500/30 via-blue-500/30 to-purple-500/30 border border-white/30 hover:border-white/50 text-white hover:shadow-2xl transition-all hover:scale-110 glow-effect animate-float" style={{ animationDelay: '0s' }}>
+            <Phone className="w-8 h-8 mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-bold drop-shadow-md">Thuê OTP</span>
           </Link>
-          <Link href="/dashboard/deposit" className="flex flex-col items-center p-4 rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white hover:shadow-lg hover:shadow-green-500/30 transition-all hover:scale-105">
-            <Wallet className="w-6 h-6 mb-2" />
-            <span className="text-sm font-medium">Nạp tiền</span>
+          <Link href="/dashboard/deposit" className="group flex flex-col items-center p-6 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-green-500/30 via-emerald-500/30 to-teal-500/30 border border-white/30 hover:border-white/50 text-white hover:shadow-2xl transition-all hover:scale-110 glow-effect animate-float" style={{ animationDelay: '0.1s' }}>
+            <Wallet className="w-8 h-8 mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-bold drop-shadow-md">Nạp tiền</span>
           </Link>
-          <Link href="/dashboard/history" className="flex flex-col items-center p-4 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:shadow-lg hover:shadow-blue-500/30 transition-all hover:scale-105">
-            <History className="w-6 h-6 mb-2" />
-            <span className="text-sm font-medium">Lịch sử</span>
+          <Link href="/dashboard/history" className="group flex flex-col items-center p-6 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-blue-500/30 via-cyan-500/30 to-sky-500/30 border border-white/30 hover:border-white/50 text-white hover:shadow-2xl transition-all hover:scale-110 glow-effect animate-float" style={{ animationDelay: '0.2s' }}>
+            <History className="w-8 h-8 mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-bold drop-shadow-md">Lịch sử</span>
           </Link>
-          <Link href="/dashboard/api" className="flex flex-col items-center p-4 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105">
-            <Key className="w-6 h-6 mb-2" />
-            <span className="text-sm font-medium">API</span>
+          <Link href="/dashboard/api" className="group flex flex-col items-center p-6 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-purple-500/30 via-pink-500/30 to-rose-500/30 border border-white/30 hover:border-white/50 text-white hover:shadow-2xl transition-all hover:scale-110 glow-effect animate-float" style={{ animationDelay: '0.3s' }}>
+            <Key className="w-8 h-8 mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-bold drop-shadow-md">API</span>
           </Link>
         </div>
       </div>

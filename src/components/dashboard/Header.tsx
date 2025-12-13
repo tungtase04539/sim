@@ -34,23 +34,23 @@ export default function DashboardHeader({ user }: HeaderProps) {
   const [notifOpen, setNotifOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-40 h-14 glass border-b border-dark-200/50 dark:border-dark-700/50 px-5 flex items-center justify-between backdrop-blur-sm bg-white/80 dark:bg-dark-800/80">
+    <header className="sticky top-0 z-40 h-16 glass-card-strong border-b border-white/20 px-6 flex items-center justify-between backdrop-blur-2xl">
       {/* Page Title - will be dynamic */}
       <div className="lg:hidden w-10" /> {/* Spacer for mobile menu button */}
       
       <div className="hidden lg:block">
-        <h1 className="text-base font-semibold text-dark-800 dark:text-white">Dashboard</h1>
+        <h1 className="text-lg font-bold gradient-text">Dashboard</h1>
       </div>
 
       {/* Right Section */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         {/* Balance Badge */}
         <Link 
           href="/dashboard/deposit"
-          className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary-500/10 to-accent-500/10 border border-primary-200/50 dark:border-primary-800/50 hover:border-primary-400 dark:hover:border-primary-600 transition-all hover:shadow-sm"
+          className="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-2xl backdrop-blur-xl bg-gradient-to-r from-primary-500/20 via-blue-500/20 to-purple-500/20 border border-white/30 hover:border-white/50 transition-all hover:shadow-xl glow-effect"
         >
-          <Wallet className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
-          <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
+          <Wallet className="w-4 h-4 text-white drop-shadow-lg" />
+          <span className="text-sm font-bold text-white drop-shadow-md">
             {formatCurrency(user.balance)}
           </span>
         </Link>
@@ -58,13 +58,13 @@ export default function DashboardHeader({ user }: HeaderProps) {
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-lg bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
+          className="p-2.5 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-110 hover:shadow-lg"
           aria-label="Toggle theme"
         >
           {theme === 'dark' ? (
-            <Sun className="w-4 h-4 text-yellow-500" />
+            <Sun className="w-4 h-4 text-yellow-400 drop-shadow-lg" />
           ) : (
-            <Moon className="w-4 h-4 text-dark-600" />
+            <Moon className="w-4 h-4 text-white drop-shadow-lg" />
           )}
         </button>
 
@@ -72,12 +72,12 @@ export default function DashboardHeader({ user }: HeaderProps) {
         <div className="relative">
           <button
             onClick={() => setNotifOpen(!notifOpen)}
-            className="relative p-2 rounded-lg bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
+            className="relative p-2.5 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-110 hover:shadow-lg"
             aria-label="Notifications"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-4 h-4 text-white drop-shadow-lg" />
             {notifications.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold">
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] flex items-center justify-center font-bold shadow-lg animate-pulse-glow">
                 {notifications.length}
               </span>
             )}
@@ -86,29 +86,29 @@ export default function DashboardHeader({ user }: HeaderProps) {
           {notifOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
-              <div className="absolute right-0 mt-2 w-80 glass-card py-2 z-50 animate-slide-down">
-                <div className="px-4 py-2 border-b border-dark-200 dark:border-dark-700">
-                  <h3 className="font-semibold">Thông báo</h3>
+              <div className="absolute right-0 mt-2 w-80 glass-card-strong py-3 z-50 animate-slide-down">
+                <div className="px-5 py-3 border-b border-white/20">
+                  <h3 className="font-bold text-white drop-shadow-md">Thông báo</h3>
                 </div>
                 <div className="max-h-64 overflow-y-auto">
                   {notifications.map((notif) => (
                     <div
                       key={notif.id}
-                      className="px-4 py-3 hover:bg-dark-50 dark:hover:bg-dark-700/50 cursor-pointer border-b border-dark-100 dark:border-dark-700 last:border-b-0"
+                      className="px-5 py-3 hover:bg-white/10 cursor-pointer border-b border-white/10 last:border-b-0 transition-all"
                     >
-                      <p className="font-medium text-sm">{notif.title}</p>
-                      <p className="text-sm text-dark-500 dark:text-dark-400">{notif.message}</p>
-                      <p className="text-xs text-dark-400 mt-1">{notif.time}</p>
+                      <p className="font-semibold text-sm text-white drop-shadow-sm">{notif.title}</p>
+                      <p className="text-sm text-white/80 mt-1">{notif.message}</p>
+                      <p className="text-xs text-white/60 mt-1.5">{notif.time}</p>
                     </div>
                   ))}
                 </div>
-                <div className="px-4 py-2 border-t border-dark-200 dark:border-dark-700">
+                <div className="px-5 py-3 border-t border-white/20">
                   <Link 
                     href="/dashboard/notifications"
-                    className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+                    className="text-sm font-semibold gradient-text hover:underline"
                     onClick={() => setNotifOpen(false)}
                   >
-                    Xem tất cả
+                    Xem tất cả →
                   </Link>
                 </div>
               </div>
@@ -120,14 +120,14 @@ export default function DashboardHeader({ user }: HeaderProps) {
         <div className="relative">
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="flex items-center gap-2 p-1.5 rounded-lg bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 transition-colors"
+            className="flex items-center gap-2.5 p-1.5 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-105 hover:shadow-lg"
             aria-label="User menu"
           >
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-sm">
-              <User className="w-3.5 h-3.5 text-white" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-lg animate-pulse-glow">
+              <User className="w-4 h-4 text-white drop-shadow-lg" />
             </div>
             <ChevronDown className={cn(
-              "w-3.5 h-3.5 transition-transform hidden sm:block text-dark-500",
+              "w-4 h-4 transition-transform hidden sm:block text-white drop-shadow-lg",
               userMenuOpen && "rotate-180"
             )} />
           </button>
@@ -135,37 +135,37 @@ export default function DashboardHeader({ user }: HeaderProps) {
           {userMenuOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
-              <div className="absolute right-0 mt-2 w-56 glass-card py-2 z-50 animate-slide-down">
-                <div className="px-4 py-2 border-b border-dark-200 dark:border-dark-700">
-                  <p className="font-medium truncate">{user.full_name || 'User'}</p>
-                  <p className="text-sm text-dark-500 dark:text-dark-400 truncate">{user.email}</p>
+              <div className="absolute right-0 mt-2 w-64 glass-card-strong py-3 z-50 animate-slide-down">
+                <div className="px-5 py-3 border-b border-white/20">
+                  <p className="font-bold text-white truncate drop-shadow-md">{user.full_name || 'User'}</p>
+                  <p className="text-sm text-white/80 truncate mt-1">{user.email}</p>
                 </div>
                 <Link
                   href="/dashboard/settings"
-                  className="flex items-center gap-3 px-4 py-2 hover:bg-dark-100 dark:hover:bg-dark-700 transition-colors"
+                  className="flex items-center gap-3 px-5 py-3 hover:bg-white/10 transition-all rounded-lg mx-2 my-1"
                   onClick={() => setUserMenuOpen(false)}
                 >
-                  <Settings className="w-4 h-4" />
-                  <span>Cài đặt</span>
+                  <Settings className="w-4 h-4 text-white" />
+                  <span className="text-white font-medium">Cài đặt</span>
                 </Link>
                 {user.role === 'admin' && (
                   <Link
                     href="/admin"
-                    className="flex items-center gap-3 px-4 py-2 hover:bg-dark-100 dark:hover:bg-dark-700 transition-colors text-accent-600 dark:text-accent-400"
+                    className="flex items-center gap-3 px-5 py-3 hover:bg-white/10 transition-all rounded-lg mx-2 my-1"
                     onClick={() => setUserMenuOpen(false)}
                   >
-                    <span>🔐</span>
-                    <span>Admin Panel</span>
+                    <span className="text-2xl">🔐</span>
+                    <span className="text-white font-medium gradient-text">Admin Panel</span>
                   </Link>
                 )}
-                <hr className="my-2 border-dark-200 dark:border-dark-700" />
+                <hr className="my-2 border-white/20" />
                 <form action="/auth/signout" method="POST">
                   <button
                     type="submit"
-                    className="flex items-center gap-3 px-4 py-2 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    className="flex items-center gap-3 px-5 py-3 w-full text-left text-red-400 hover:bg-red-500/20 transition-all rounded-lg mx-2"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Đăng xuất</span>
+                    <span className="font-medium">Đăng xuất</span>
                   </button>
                 </form>
               </div>
