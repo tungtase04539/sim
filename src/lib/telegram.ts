@@ -1,102 +1,120 @@
-// Telegram Bot integration for notifications
-
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID
 
-// Send message to Telegram
-async function sendTelegramMessage(message: string): Promise<boolean> {
+interface TelegramMessage {
+  type: 'deposit' | 'order' | 'refund' | 'alert'
+  title: string
+  details: Record<string, string | number>
+}
+
+export async function sendTelegramNotification(message: TelegramMessage): Promise<boolean> {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-    console.log('[Telegram] Not configured, skipping notification')
+    console.warn('Telegram credentials not configured')
     return false
   }
+
+  const emoji = {
+    deposit: '💰',
+    order: '📱',
+    refund: '↩️',
+    alert: '⚠️',
+  }
+
+  let text = `${emoji[message.type]} <b>${message.title}</b>\n\n`
+  
+  for (const [key, value] of Object.entries(message.details)) {
+    text += `<b>${key}:</b> ${value}\n`
+  }
+  
+  text += `\n⏰ ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`
 
   try {
     const response = await fetch(
       `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           chat_id: TELEGRAM_CHAT_ID,
-          text: message,
+          text,
           parse_mode: 'HTML',
         }),
       }
     )
 
-    if (!response.ok) {
-      const error = await response.text()
-      console.error('[Telegram] Error:', error)
-      return false
-    }
-
-    return true
+    const result = await response.json()
+    return result.ok
   } catch (error) {
-    console.error('[Telegram] Error sending message:', error)
+    console.error('Failed to send Telegram notification:', error)
     return false
   }
 }
 
-// Notify about deposit
 export async function notifyDeposit(
   userEmail: string,
   amount: number,
   paymentCode: string,
-  referenceNumber: string
+  transactionId?: string
 ): Promise<void> {
-  const message = `
-💰 <b>Nạp tiền thành công</b>
-
-👤 Email: ${userEmail}
-💵 Số tiền: ${amount.toLocaleString('vi-VN')}đ
-🔖 Mã thanh toán: ${paymentCode}
-📝 Mã tham chiếu: ${referenceNumber}
-⏰ Thời gian: ${new Date().toLocaleString('vi-VN')}
-  `.trim()
-
-  await sendTelegramMessage(message)
+  await sendTelegramNotification({
+    type: 'deposit',
+    title: 'Nạp tiền thành công',
+    details: {
+      'Email': userEmail,
+      'Số tiền': `${amount.toLocaleString('vi-VN')} VND`,
+      'Mã thanh toán': paymentCode,
+      'Mã giao dịch': transactionId || 'N/A',
+    },
+  })
 }
 
-// Notify about order
 export async function notifyOrder(
   userEmail: string,
   service: string,
-  phoneNumber: string,
-  amount: number
+  country: string,
+  phone: string,
+  price: number
 ): Promise<void> {
-  const message = `
-📱 <b>Đơn hàng mới</b>
-
-👤 Email: ${userEmail}
-🛍️ Dịch vụ: ${service}
-📞 Số điện thoại: ${phoneNumber}
-💵 Giá: ${amount.toLocaleString('vi-VN')}đ
-⏰ Thời gian: ${new Date().toLocaleString('vi-VN')}
-  `.trim()
-
-  await sendTelegramMessage(message)
+  await sendTelegramNotification({
+    type: 'order',
+    title: 'Đơn thuê OTP mới',
+    details: {
+      'Email': userEmail,
+      'Dịch vụ': service,
+      'Quốc gia': country,
+      'Số điện thoại': phone,
+      'Giá': `${price.toLocaleString('vi-VN')} VND`,
+    },
+  })
 }
 
-// Notify about refund
 export async function notifyRefund(
   userEmail: string,
+  orderId: string,
   amount: number,
   reason: string
 ): Promise<void> {
-  const message = `
-↩️ <b>Hoàn tiền</b>
-
-👤 Email: ${userEmail}
-💵 Số tiền: ${amount.toLocaleString('vi-VN')}đ
-📝 Lý do: ${reason}
-⏰ Thời gian: ${new Date().toLocaleString('vi-VN')}
-  `.trim()
-
-  await sendTelegramMessage(message)
+  await sendTelegramNotification({
+    type: 'refund',
+    title: 'Hoàn tiền đơn hàng',
+    details: {
+      'Email': userEmail,
+      'Mã đơn': orderId,
+      'Số tiền hoàn': `${amount.toLocaleString('vi-VN')} VND`,
+      'Lý do': reason,
+    },
+  })
 }
 
-// Send alert
-export async function notifyAlert(message: string): Promise<void> {
-  await sendTelegramMessage(`⚠️ <b>Alert</b>\n\n${message}`)
+export async function notifyAlert(title: string, message: string): Promise<void> {
+  await sendTelegramNotification({
+    type: 'alert',
+    title,
+    details: {
+      'Chi tiết': message,
+    },
+  })
 }
 
