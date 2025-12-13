@@ -182,7 +182,7 @@ export default function RentOTPPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
           <h1 className="text-4xl font-bold gradient-text flex items-center gap-4 mb-3 drop-shadow-lg">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-2xl animate-pulse-glow">
+            <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
               <Phone className="w-6 h-6 text-white drop-shadow-lg" />
             </div>
             Thuê SIM nhận OTP
@@ -191,7 +191,7 @@ export default function RentOTPPage() {
             Chọn dịch vụ và quốc gia để thuê số nhận OTP
           </p>
         </div>
-        <div className="text-right glass-card-strong px-6 py-4 rounded-2xl">
+        <div className="text-right glass-card-strong px-6 py-4 rounded-md">
           <p className="text-xs text-white/70 mb-1 font-semibold uppercase tracking-wider">Số dư</p>
           <p className="text-3xl font-bold gradient-text drop-shadow-lg">{formatCurrency(balance)}</p>
         </div>
@@ -200,7 +200,7 @@ export default function RentOTPPage() {
       {/* Activation Form */}
       <div className="glass-card-strong p-8">
         <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3 drop-shadow-md">
-          <div className="w-2 h-6 bg-gradient-to-b from-primary-400 via-blue-400 to-purple-400 rounded-full shadow-lg"></div>
+          <div className="w-2 h-6 bg-gradient-to-b from-primary-400 via-blue-400 to-blue-500 rounded-md shadow-sm"></div>
           ACTIVATIONS
         </h2>
 

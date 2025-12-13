@@ -99,9 +99,9 @@ export default async function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="glass-card-strong p-6 card-hover animate-float" style={{ animationDelay: '0s' }}>
+        <div className="glass-card-strong p-6 card-hover">
           <div className="flex items-start justify-between mb-5">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-2xl animate-pulse-glow">
+            <div className="w-14 h-14 rounded-md bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
               <Wallet className="w-7 h-7 text-white drop-shadow-lg" />
             </div>
             <Link href="/dashboard/deposit" className="text-xs font-semibold text-white/80 hover:text-white hover:underline flex items-center gap-1 px-3 py-1.5 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all">
@@ -254,7 +254,7 @@ export default async function DashboardPage() {
       <div className="glass-card-strong p-6">
         <h2 className="text-lg font-bold text-white drop-shadow-md mb-6">Thao tác nhanh</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <Link href="/dashboard/rent" className="group flex flex-col items-center p-6 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-primary-500/30 via-blue-500/30 to-purple-500/30 border border-white/30 hover:border-white/50 text-white hover:shadow-2xl transition-all hover:scale-110 glow-effect animate-float" style={{ animationDelay: '0s' }}>
+          <Link href="/dashboard/rent" className="group flex flex-col items-center p-6 rounded-md backdrop-blur-xl bg-gradient-to-br from-primary-500/30 via-blue-500/30 to-blue-600/30 border border-white/30 hover:border-white/50 text-white transition-all">
             <Phone className="w-8 h-8 mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" />
             <span className="text-sm font-bold drop-shadow-md">Thuê OTP</span>
           </Link>
@@ -266,7 +266,7 @@ export default async function DashboardPage() {
             <History className="w-8 h-8 mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" />
             <span className="text-sm font-bold drop-shadow-md">Lịch sử</span>
           </Link>
-          <Link href="/dashboard/api" className="group flex flex-col items-center p-6 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-purple-500/30 via-pink-500/30 to-rose-500/30 border border-white/30 hover:border-white/50 text-white hover:shadow-2xl transition-all hover:scale-110 glow-effect animate-float" style={{ animationDelay: '0.3s' }}>
+          <Link href="/dashboard/api" className="group flex flex-col items-center p-6 rounded-md backdrop-blur-xl bg-gradient-to-br from-blue-500/30 via-blue-600/30 to-primary-500/30 border border-white/30 hover:border-white/50 text-white transition-all">
             <Key className="w-8 h-8 mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" />
             <span className="text-sm font-bold drop-shadow-md">API</span>
           </Link>

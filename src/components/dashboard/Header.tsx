@@ -47,7 +47,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
         {/* Balance Badge */}
         <Link 
           href="/dashboard/deposit"
-          className="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-2xl backdrop-blur-xl bg-gradient-to-r from-primary-500/20 via-blue-500/20 to-purple-500/20 border border-white/30 hover:border-white/50 transition-all hover:shadow-xl glow-effect"
+          className="hidden sm:flex items-center gap-2.5 px-4 py-2 rounded-md backdrop-blur-xl bg-gradient-to-r from-primary-500/20 via-blue-500/20 to-blue-600/20 border border-white/30 hover:border-white/50 transition-all"
         >
           <Wallet className="w-4 h-4 text-white drop-shadow-lg" />
           <span className="text-sm font-bold text-white drop-shadow-md">
@@ -58,7 +58,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2.5 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-110 hover:shadow-lg"
+          className="p-2.5 rounded-md backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all"
           aria-label="Toggle theme"
         >
           {theme === 'dark' ? (
@@ -72,7 +72,7 @@ export default function DashboardHeader({ user }: HeaderProps) {
         <div className="relative">
           <button
             onClick={() => setNotifOpen(!notifOpen)}
-            className="relative p-2.5 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-110 hover:shadow-lg"
+            className="relative p-2.5 rounded-md backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4 text-white drop-shadow-lg" />
@@ -120,10 +120,10 @@ export default function DashboardHeader({ user }: HeaderProps) {
         <div className="relative">
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="flex items-center gap-2.5 p-1.5 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-105 hover:shadow-lg"
+            className="flex items-center gap-2.5 p-1.5 rounded-md backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all"
             aria-label="User menu"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-lg animate-pulse-glow">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-lg animate-pulse-glow">
               <User className="w-4 h-4 text-white drop-shadow-lg" />
             </div>
             <ChevronDown className={cn(

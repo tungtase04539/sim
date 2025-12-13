@@ -50,31 +50,31 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-dark-900 dark:via-dark-800 dark:to-dark-900 p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md animate-fade-in">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">O</span>
+        <div className="text-center mb-10">
+          <Link href="/" className="inline-flex items-center gap-4 group">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform animate-pulse-glow">
+              <span className="text-white font-bold text-3xl drop-shadow-lg">O</span>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
+            <span className="text-3xl font-bold gradient-text">
               OTP Resale
             </span>
           </Link>
         </div>
 
         {/* Form */}
-        <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-xl border border-dark-200/50 dark:border-dark-700/50 p-8">
-          <h1 className="text-3xl font-bold text-dark-900 dark:text-white text-center mb-2">
+        <div className="glass-card-strong p-10">
+          <h1 className="text-4xl font-bold gradient-text text-center mb-3 drop-shadow-lg">
             Đăng nhập
           </h1>
-          <p className="text-dark-500 dark:text-dark-400 text-center mb-8">
+          <p className="text-white/80 text-center mb-8 text-lg drop-shadow-md">
             Chào mừng bạn quay lại!
           </p>
 
           {error && (
-            <div className="mb-5 p-4 rounded-xl bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-2 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-medium">
+            <div className="mb-6 p-5 rounded-2xl backdrop-blur-xl bg-gradient-to-r from-red-500/20 to-pink-500/20 border-2 border-red-400/50 text-red-200 text-sm font-semibold shadow-xl">
               {error}
             </div>
           )}
@@ -91,7 +91,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  className="input-field pl-12"
                   required
                 />
               </div>
@@ -108,7 +108,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 pl-12 pr-12 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  className="input-field pl-12 pr-12"
                   required
                 />
                 <button

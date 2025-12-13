@@ -80,7 +80,7 @@ export default function DashboardSidebar({ user }: SidebarProps) {
         {/* Close Button (Mobile) */}
         <button
           onClick={() => setIsOpen(false)}
-          className="lg:hidden absolute top-4 right-4 p-2 rounded-xl backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all hover:scale-110"
+          className="lg:hidden absolute top-4 right-4 p-2 rounded-md backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all"
         >
           <X className="w-5 h-5 text-white" />
         </button>
@@ -88,7 +88,7 @@ export default function DashboardSidebar({ user }: SidebarProps) {
         {/* Logo */}
         <div className="p-6 border-b border-white/20">
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform animate-pulse-glow">
+            <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-sm transition-all">
               <span className="text-white font-bold text-2xl drop-shadow-lg">O</span>
             </div>
             <span className="text-2xl font-bold gradient-text">
@@ -98,9 +98,9 @@ export default function DashboardSidebar({ user }: SidebarProps) {
         </div>
 
         {/* User Info */}
-        <div className="p-5 border-b border-white/20 backdrop-blur-xl bg-gradient-to-br from-primary-500/20 via-blue-500/20 to-purple-500/20">
+        <div className="p-5 border-b border-white/20 backdrop-blur-xl bg-gradient-to-br from-primary-500/20 via-blue-500/20 to-blue-600/20">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-2xl animate-float">
+            <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-sm">
               {user.full_name?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
@@ -130,16 +130,13 @@ export default function DashboardSidebar({ user }: SidebarProps) {
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all text-sm font-medium group",
+                  "flex items-center gap-3 px-4 py-3 rounded-md transition-all text-sm font-medium group",
                   isActive
-                    ? "backdrop-blur-xl bg-gradient-to-r from-primary-500/30 via-blue-500/30 to-purple-500/30 text-white shadow-xl border border-white/30 glow-effect"
-                    : "text-white/80 hover:bg-white/10 hover:text-white hover:scale-105 hover:shadow-lg border border-transparent hover:border-white/20"
+                    ? "backdrop-blur-xl bg-gradient-to-r from-primary-500/30 via-blue-500/30 to-blue-600/30 text-white shadow-sm border border-white/30"
+                    : "text-white/80 hover:bg-white/10 hover:text-white border border-transparent hover:border-white/20"
                 )}
               >
-                <item.icon className={cn(
-                  "w-5 h-5 flex-shrink-0 transition-transform",
-                  isActive ? "drop-shadow-lg" : "group-hover:scale-110"
-                )} />
+                <item.icon className="w-5 h-5 flex-shrink-0" />
                 <span className="flex-1">{item.label}</span>
                 {isActive && <ChevronRight className="w-4 h-4 flex-shrink-0 animate-float" />}
               </Link>
@@ -152,7 +149,7 @@ export default function DashboardSidebar({ user }: SidebarProps) {
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="flex items-center gap-3 px-4 py-3 rounded-2xl w-full backdrop-blur-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 transition-all border border-red-500/30 hover:border-red-500/50 hover:scale-105 hover:shadow-xl disabled:opacity-50"
+            className="flex items-center gap-3 px-4 py-3 rounded-md w-full backdrop-blur-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 transition-all border border-red-500/30 hover:border-red-500/50 disabled:opacity-50"
           >
             {isLoggingOut ? (
               <Loader2 className="w-5 h-5 animate-spin" />
