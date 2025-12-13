@@ -181,25 +181,25 @@ export default function RentOTPPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-bold gradient-text flex items-center gap-4 mb-3 drop-shadow-lg">
+          <h1 className="text-4xl font-bold text-primary-700 dark:text-primary-300 flex items-center gap-4 mb-3">
             <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
-              <Phone className="w-6 h-6 text-white drop-shadow-lg" />
+              <Phone className="w-6 h-6 text-white" />
             </div>
             Thuê SIM nhận OTP
           </h1>
-          <p className="text-white/80 text-lg drop-shadow-md">
+          <p className="text-gray-700 dark:text-gray-300 text-lg">
             Chọn dịch vụ và quốc gia để thuê số nhận OTP
           </p>
         </div>
         <div className="text-right glass-card-strong px-6 py-4 rounded-md">
-          <p className="text-xs text-white/70 mb-1 font-semibold uppercase tracking-wider">Số dư</p>
-          <p className="text-3xl font-bold gradient-text drop-shadow-lg">{formatCurrency(balance)}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1 font-semibold uppercase tracking-wider">Số dư</p>
+          <p className="text-3xl font-bold text-primary-700 dark:text-primary-300">{formatCurrency(balance)}</p>
         </div>
       </div>
 
       {/* Activation Form */}
       <div className="glass-card-strong p-8">
-        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3 drop-shadow-md">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
           <div className="w-2 h-6 bg-gradient-to-b from-primary-400 via-blue-400 to-blue-500 rounded-md shadow-sm"></div>
           ACTIVATIONS
         </h2>
@@ -207,7 +207,7 @@ export default function RentOTPPage() {
         <div className="grid md:grid-cols-3 gap-5 mb-6">
           {/* Country */}
           <div>
-            <label className="block text-xs font-semibold text-white/90 mb-3 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">
               Country
             </label>
             <select
