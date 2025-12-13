@@ -177,41 +177,43 @@ export default function RentOTPPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-dark-900 dark:text-white flex items-center gap-3 mb-2">
-            <Phone className="w-8 h-8 text-primary-500" />
+          <h1 className="text-4xl font-bold gradient-text flex items-center gap-4 mb-3 drop-shadow-lg">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-2xl animate-pulse-glow">
+              <Phone className="w-6 h-6 text-white drop-shadow-lg" />
+            </div>
             Thuê SIM nhận OTP
           </h1>
-          <p className="text-dark-500 dark:text-dark-400">
+          <p className="text-white/80 text-lg drop-shadow-md">
             Chọn dịch vụ và quốc gia để thuê số nhận OTP
           </p>
         </div>
-        <div className="text-right bg-gradient-to-br from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 px-5 py-3 rounded-xl border border-primary-200 dark:border-primary-800">
-          <p className="text-xs text-dark-500 dark:text-dark-400 mb-1 font-medium">Số dư</p>
-          <p className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">{formatCurrency(balance)}</p>
+        <div className="text-right glass-card-strong px-6 py-4 rounded-2xl">
+          <p className="text-xs text-white/70 mb-1 font-semibold uppercase tracking-wider">Số dư</p>
+          <p className="text-3xl font-bold gradient-text drop-shadow-lg">{formatCurrency(balance)}</p>
         </div>
       </div>
 
       {/* Activation Form */}
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-6">
-        <h2 className="text-base font-semibold text-dark-900 dark:text-white mb-5 flex items-center gap-2">
-          <div className="w-1.5 h-5 bg-gradient-to-b from-primary-500 to-blue-500 rounded-full"></div>
+      <div className="glass-card-strong p-8">
+        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3 drop-shadow-md">
+          <div className="w-2 h-6 bg-gradient-to-b from-primary-400 via-blue-400 to-purple-400 rounded-full shadow-lg"></div>
           ACTIVATIONS
         </h2>
 
-        <div className="grid md:grid-cols-3 gap-4 mb-6">
+        <div className="grid md:grid-cols-3 gap-5 mb-6">
           {/* Country */}
           <div>
-            <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
+            <label className="block text-xs font-semibold text-white/90 mb-3 uppercase tracking-wider">
               Country
             </label>
             <select
               value={selectedCountry.id}
               onChange={(e) => setSelectedCountry(COUNTRIES.find(c => c.id === e.target.value) || COUNTRIES[0])}
-              className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+              className="input-field"
             >
               {COUNTRIES.map(country => (
                 <option key={country.id} value={country.id}>
@@ -223,23 +225,23 @@ export default function RentOTPPage() {
 
           {/* Operator */}
           <div>
-            <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
+            <label className="block text-xs font-semibold text-white/90 mb-3 uppercase tracking-wider">
               Operator
             </label>
-            <select className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all">
+            <select className="input-field">
               <option>any</option>
             </select>
           </div>
 
           {/* Service */}
           <div>
-            <label className="block text-xs font-semibold text-dark-700 dark:text-dark-300 mb-2 uppercase tracking-wide">
+            <label className="block text-xs font-semibold text-white/90 mb-3 uppercase tracking-wider">
               Service
             </label>
             <select
               value={selectedService?.id || ''}
               onChange={(e) => setSelectedService(SERVICES.find(s => s.id === e.target.value) || null)}
-              className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+              className="input-field"
             >
               <option value="">-- Chọn dịch vụ --</option>
               {SERVICES.map(service => (
@@ -255,7 +257,7 @@ export default function RentOTPPage() {
         <button
           onClick={handleOrder}
           disabled={!selectedService || isOrdering || balance < (selectedService?.price || 0)}
-          className="w-full md:w-auto bg-gradient-to-r from-primary-600 to-blue-600 hover:from-primary-700 hover:to-blue-700 text-white font-semibold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="btn-primary w-full md:w-auto text-base py-4 px-10"
         >
           {isOrdering ? (
             <>
@@ -276,7 +278,7 @@ export default function RentOTPPage() {
       </div>
 
       {/* My Orders */}
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 overflow-hidden">
+      <div className="glass-card-strong overflow-hidden">
         <div className="p-5 bg-gradient-to-r from-primary-600 to-blue-600 text-white flex items-center justify-between">
           <h2 className="font-semibold flex items-center gap-2 text-base">
             MY ORDERS ({orders.length})
