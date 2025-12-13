@@ -31,7 +31,7 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  const { user, profile } = userData
+  let { user, profile } = userData
 
   // If no profile exists, create one using service role
   if (!profile) {
