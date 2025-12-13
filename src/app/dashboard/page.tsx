@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate, formatShortDate } from '@/lib/utils'
 import Link from 'next/link'
 import { 
   Wallet, 
