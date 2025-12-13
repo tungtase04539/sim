@@ -75,7 +75,7 @@ export default function AdminSidebar() {
       {/* Back to Dashboard */}
       <div className="p-4 border-t border-dark-200 dark:border-dark-700">
         <Link
-          href="/dashboard"
+          href="/dashboard/rent"
           className="sidebar-link text-primary-600 dark:text-primary-400"
         >
           <LogOut className="w-5 h-5 rotate-180" />

@@ -175,13 +175,13 @@ export default function DepositPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-4xl font-bold gradient-text flex items-center gap-4 mb-3 drop-shadow-lg">
+        <h1 className="text-4xl font-bold text-primary-700 dark:text-primary-300 flex items-center gap-4 mb-3">
             <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
-            <Wallet className="w-6 h-6 text-white drop-shadow-lg" />
+            <Wallet className="w-6 h-6 text-white" />
           </div>
           Nạp tiền
         </h1>
-        <p className="text-white/80 text-lg drop-shadow-md">
+        <p className="text-gray-700 dark:text-gray-300 text-lg">
           Chuyển khoản ngân hàng - Cộng tiền tự động trong 1-3 phút
         </p>
       </div>
@@ -192,16 +192,16 @@ export default function DepositPage() {
           <div className="w-20 h-20 rounded-md bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mx-auto mb-6 shadow-sm">
             <CheckCircle2 className="w-10 h-10 text-white drop-shadow-lg" />
           </div>
-          <h2 className="text-3xl font-bold gradient-text mb-3 drop-shadow-lg">
+          <h2 className="text-3xl font-bold text-primary-700 dark:text-primary-300 mb-3">
             Nạp tiền thành công! 🎉
           </h2>
-          <p className="text-base text-white/90 mb-4 drop-shadow-md">
-            Số tiền <strong className="text-lg text-white font-bold">{formatCurrency(finalAmount)}</strong> đã được cộng vào tài khoản
+          <p className="text-base text-gray-700 dark:text-gray-300 mb-4">
+            Số tiền <strong className="text-lg text-primary-700 dark:text-primary-300 font-bold">{formatCurrency(finalAmount)}</strong> đã được cộng vào tài khoản
           </p>
           {newBalance !== null && !isNaN(newBalance) && (
-            <div className="mb-6 p-5 rounded-md backdrop-blur-xl bg-white/10 border border-white/30 shadow-sm">
-              <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-semibold">Số dư mới</p>
-              <p className="text-3xl font-bold gradient-text">{formatCurrency(newBalance)}</p>
+            <div className="mb-6 p-5 rounded-md bg-white/90 dark:bg-dark-800/90 border border-blue-200/50 dark:border-blue-700/50 shadow-sm">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider font-semibold">Số dư mới</p>
+              <p className="text-3xl font-bold text-primary-700 dark:text-primary-300">{formatCurrency(newBalance)}</p>
             </div>
           )}
           <button onClick={resetDeposit} className="btn-primary mt-6 text-base py-4 px-8">
@@ -216,10 +216,10 @@ export default function DepositPage() {
           <div className="w-20 h-20 rounded-md bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center mx-auto mb-6 shadow-sm">
             <Clock className="w-10 h-10 text-white drop-shadow-lg" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-3 drop-shadow-lg">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
             Yêu cầu đã hết hạn
           </h2>
-          <p className="text-base text-white/80 mb-6 drop-shadow-md">
+          <p className="text-base text-gray-700 dark:text-gray-300 mb-6">
             Vui lòng tạo giao dịch mới để tiếp tục
           </p>
           <button onClick={resetDeposit} className="btn-primary mt-6 text-base py-4 px-8">
@@ -234,7 +234,7 @@ export default function DepositPage() {
             <>
               {/* Amount Selection */}
               <div className="glass-card-strong p-8 mb-8">
-                <h2 className="text-xl font-bold text-white mb-6 drop-shadow-md">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                   Chọn số tiền nạp
                 </h2>
                 
@@ -243,24 +243,23 @@ export default function DepositPage() {
                     <button
                       key={a}
                       onClick={() => { setAmount(a); setCustomAmount('') }}
-                      className={`p-5 rounded-md border transition-all duration-200 backdrop-blur-xl ${
+                      className={`p-5 rounded-md border transition-all duration-200 bg-white/90 dark:bg-dark-800/90 ${
                         amount === a && !customAmount
-                          ? 'border-white/50 bg-gradient-to-br from-primary-500/30 via-blue-500/30 to-blue-600/30 shadow-sm'
-                          : 'border-white/20 bg-white/10 hover:border-white/40 hover:bg-white/20'
+                          ? 'border-primary-500 bg-blue-50 dark:bg-blue-900/30 shadow-sm'
+                          : 'border-blue-200 dark:border-blue-700 hover:border-primary-400 dark:hover:border-primary-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20'
                       }`}
-                      style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <span className={`font-bold text-base ${
                         amount === a && !customAmount
-                          ? 'text-white drop-shadow-lg'
-                          : 'text-white/80'
+                          ? 'text-primary-700 dark:text-primary-300'
+                          : 'text-gray-700 dark:text-gray-300'
                       }`}>{formatCurrency(a)}</span>
                     </button>
                   ))}
                 </div>
 
                 <div className="pt-6 border-t border-white/20">
-                  <label className="block text-sm font-semibold text-white/90 mb-3 uppercase tracking-wider">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">
                     Hoặc nhập số tiền khác
                   </label>
                   <input
@@ -272,15 +271,15 @@ export default function DepositPage() {
                     min="10000"
                     step="10000"
                   />
-                  <p className="text-xs text-white/60 mt-3 font-medium">Tối thiểu: 10,000₫</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-3 font-medium">Tối thiểu: 10,000₫</p>
                 </div>
               </div>
 
               {/* Summary */}
               <div className="glass-card-strong p-8 bg-gradient-to-br from-primary-500/20 via-blue-500/20 to-blue-600/20 border-2 border-white/30">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-base font-semibold text-white/90 uppercase tracking-wider">Số tiền nạp:</span>
-                  <span className="text-4xl font-bold gradient-text drop-shadow-lg">{formatCurrency(finalAmount)}</span>
+                  <span className="text-base font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Số tiền nạp:</span>
+                  <span className="text-4xl font-bold text-primary-700 dark:text-primary-300">{formatCurrency(finalAmount)}</span>
                 </div>
                 
                 <button
@@ -318,10 +317,10 @@ export default function DepositPage() {
                       </div>
                     )}
                     <div>
-                      <p className="font-bold text-white text-lg drop-shadow-md">
+                      <p className="font-bold text-gray-900 dark:text-white text-lg">
                         {isChecking ? 'Đang kiểm tra...' : 'Đang chờ thanh toán'}
                       </p>
-                      <p className="text-sm text-white/80 mt-1 drop-shadow-sm">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         Tự động kiểm tra mỗi 10 giây
                       </p>
                     </div>
@@ -340,12 +339,12 @@ export default function DepositPage() {
               {/* Payment Info */}
               <div className="glass-card-strong p-8 mb-8">
                 <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-2xl font-bold text-white drop-shadow-md">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                     Thông tin chuyển khoản
                   </h2>
-                  <div className="flex items-center gap-3 px-4 py-2.5 backdrop-blur-xl bg-orange-500/20 border border-white/30 rounded-md shadow-sm">
-                    <Clock className="w-5 h-5 text-white drop-shadow-lg" />
-                    <span className="font-mono text-lg font-bold text-white drop-shadow-lg">{formatCountdown(countdown)}</span>
+                  <div className="flex items-center gap-3 px-4 py-2.5 bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded-md shadow-sm">
+                    <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    <span className="font-mono text-lg font-bold text-orange-700 dark:text-orange-300">{formatCountdown(countdown)}</span>
                   </div>
                 </div>
 
@@ -360,45 +359,45 @@ export default function DepositPage() {
                       className="rounded-md shadow-sm border border-white/30"
                       unoptimized
                     />
-                    <p className="text-sm text-white/80 mt-4 font-semibold drop-shadow-md">Quét mã QR để thanh toán</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-4 font-semibold">Quét mã QR để thanh toán</p>
                   </div>
 
                   {/* Bank Details */}
                   <div className="space-y-4">
                     <div className="p-5 rounded-md backdrop-blur-xl bg-white/10 border border-white/20 hover:bg-white/15 transition-all">
-                      <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-semibold">Ngân hàng</p>
-                      <p className="font-bold text-white text-lg drop-shadow-md">{BANK_NAME}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider font-semibold">Ngân hàng</p>
+                      <p className="font-bold text-gray-900 dark:text-white text-lg">{BANK_NAME}</p>
                     </div>
 
                     <div className="p-5 rounded-md backdrop-blur-xl bg-white/10 border border-white/20 hover:bg-white/15 transition-all">
-                      <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-semibold">Số tài khoản</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider font-semibold">Số tài khoản</p>
                       <div className="flex items-center justify-between">
-                        <p className="font-bold text-white font-mono text-xl drop-shadow-md">{BANK_ACCOUNT}</p>
-                        <button onClick={() => copyToClipboard(BANK_ACCOUNT, 'account')} className="p-2.5 rounded-md backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all">
-                          {copied === 'account' ? <CheckCircle2 className="w-5 h-5 text-green-300" /> : <Copy className="w-5 h-5 text-white" />}
+                        <p className="font-bold text-gray-900 dark:text-white font-mono text-xl">{BANK_ACCOUNT}</p>
+                        <button onClick={() => copyToClipboard(BANK_ACCOUNT, 'account')} className="p-2.5 rounded-md bg-white/90 dark:bg-dark-800/90 hover:bg-white dark:hover:bg-dark-800 border border-blue-200 dark:border-blue-700 transition-all">
+                          {copied === 'account' ? <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" /> : <Copy className="w-5 h-5 text-gray-700 dark:text-gray-300" />}
                         </button>
                       </div>
                     </div>
 
                     <div className="p-5 rounded-md backdrop-blur-xl bg-white/10 border border-white/20 hover:bg-white/15 transition-all">
-                      <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-semibold">Chủ tài khoản</p>
-                      <p className="font-bold text-white text-lg drop-shadow-md">{BANK_ACCOUNT_NAME}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider font-semibold">Chủ tài khoản</p>
+                      <p className="font-bold text-gray-900 dark:text-white text-lg">{BANK_ACCOUNT_NAME}</p>
                     </div>
 
                     <div className="p-5 rounded-md backdrop-blur-xl bg-white/10 border border-white/20 hover:bg-white/15 transition-all">
-                      <p className="text-xs text-white/70 mb-2 uppercase tracking-wider font-semibold">Số tiền</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wider font-semibold">Số tiền</p>
                       <div className="flex items-center justify-between">
-                        <p className="font-bold gradient-text text-2xl drop-shadow-lg">{formatCurrency(finalAmount)}</p>
-                        <button onClick={() => copyToClipboard(finalAmount.toString(), 'amount')} className="p-2.5 rounded-md backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-all">
-                          {copied === 'amount' ? <CheckCircle2 className="w-5 h-5 text-green-300" /> : <Copy className="w-5 h-5 text-white" />}
+                        <p className="font-bold text-primary-700 dark:text-primary-300 text-2xl">{formatCurrency(finalAmount)}</p>
+                        <button onClick={() => copyToClipboard(finalAmount.toString(), 'amount')} className="p-2.5 rounded-md bg-white/90 dark:bg-dark-800/90 hover:bg-white dark:hover:bg-dark-800 border border-blue-200 dark:border-blue-700 transition-all">
+                          {copied === 'amount' ? <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" /> : <Copy className="w-5 h-5 text-gray-700 dark:text-gray-300" />}
                         </button>
                       </div>
                     </div>
 
                     <div className="p-5 rounded-md backdrop-blur-xl bg-gradient-to-br from-primary-500/30 via-blue-500/30 to-blue-600/30 border border-white/40 shadow-sm">
-                      <p className="text-xs text-white mb-3 uppercase tracking-wider font-bold">Nội dung chuyển khoản (BẮT BUỘC)</p>
+                      <p className="text-xs text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider font-bold">Nội dung chuyển khoản (BẮT BUỘC)</p>
                       <div className="flex items-center justify-between gap-3">
-                        <p className="font-bold text-white font-mono text-lg break-all drop-shadow-md">{transferContent}</p>
+                        <p className="font-bold text-gray-900 dark:text-white font-mono text-lg break-all">{transferContent}</p>
                         <button onClick={() => copyToClipboard(transferContent, 'content')} className="p-3 rounded-md bg-gradient-to-r from-primary-500 to-blue-500 hover:from-primary-600 hover:to-blue-600 text-white transition-all shadow-sm flex-shrink-0">
                           {copied === 'content' ? <CheckCircle2 className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                         </button>
@@ -413,8 +412,8 @@ export default function DepositPage() {
                 <div className="flex items-start gap-4">
                   <AlertCircle className="w-6 h-6 text-amber-300 flex-shrink-0 mt-1 drop-shadow-lg" />
                   <div>
-                    <p className="font-bold text-white text-base mb-3 drop-shadow-md">Lưu ý quan trọng</p>
-                    <ul className="text-sm text-white/90 space-y-2.5">
+                    <p className="font-bold text-gray-900 dark:text-white text-base mb-3">Lưu ý quan trọng</p>
+                    <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-2.5">
                       <li className="flex items-start gap-3">
                         <span className="text-amber-300 mt-1 font-bold">•</span>
                         <span className="drop-shadow-sm">Nhập ĐÚNG nội dung chuyển khoản để được cộng tiền tự động</span>
@@ -438,8 +437,8 @@ export default function DepositPage() {
 
               {/* Test Button */}
               <div className="glass-card-strong p-6 mb-8 bg-gradient-to-br from-green-500/20 via-emerald-500/20 to-teal-500/20 border border-dashed border-green-400/50 rounded-md">
-                <h3 className="font-bold text-white text-base mb-2 drop-shadow-md">🧪 Chế độ Test</h3>
-                <p className="text-sm text-white/80 mb-5 drop-shadow-sm">
+                <h3 className="font-bold text-gray-900 dark:text-white text-base mb-2">🧪 Chế độ Test</h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-5">
                   Nhấn nút bên dưới để giả lập việc nạp tiền thành công (chỉ dùng để test)
                 </p>
                 <button

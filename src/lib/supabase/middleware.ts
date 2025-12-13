@@ -82,13 +82,18 @@ export async function updateSession(request: NextRequest) {
         .single()
       
       if (profile?.role !== 'admin') {
-        return NextResponse.redirect(new URL('/dashboard', request.url))
+        return NextResponse.redirect(new URL('/dashboard/rent', request.url))
       }
     }
 
     // Redirect authenticated users away from auth pages
     if ((request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register') && user) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      return NextResponse.redirect(new URL('/dashboard/rent', request.url))
+    }
+    
+    // Redirect /dashboard to /dashboard/rent
+    if (request.nextUrl.pathname === '/dashboard') {
+      return NextResponse.redirect(new URL('/dashboard/rent', request.url))
     }
   } catch (error) {
     // Continue without auth on error

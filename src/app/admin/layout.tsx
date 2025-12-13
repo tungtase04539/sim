@@ -36,7 +36,7 @@ export default async function AdminLayout({
   }
 
   if (!userData.isAdmin) {
-    redirect('/dashboard')
+    redirect('/dashboard/rent')
   }
 
   const { user, profile } = userData

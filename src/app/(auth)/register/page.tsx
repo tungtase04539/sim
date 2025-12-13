@@ -80,7 +80,7 @@ export default function RegisterPage() {
 
         if (data.session) {
           // User is automatically logged in
-          router.push('/dashboard')
+          router.push('/dashboard/rent')
           router.refresh()
         } else {
           // Email confirmation required

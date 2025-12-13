@@ -129,7 +129,7 @@ export default function Header({ user }: HeaderProps) {
                         </p>
                       </div>
                       <Link
-                        href="/dashboard"
+                        href="/dashboard/rent"
                         className="flex items-center gap-3 px-4 py-2 hover:bg-dark-100 dark:hover:bg-dark-700 transition-colors"
                         onClick={() => setUserMenuOpen(false)}
                       >

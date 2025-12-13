@@ -26,12 +26,10 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Tổng quan' },
   { href: '/dashboard/rent', icon: Phone, label: 'Thuê OTP' },
   { href: '/dashboard/history', icon: History, label: 'Lịch sử' },
   { href: '/dashboard/deposit', icon: Wallet, label: 'Nạp tiền' },
   { href: '/dashboard/transactions', icon: CreditCard, label: 'Giao dịch' },
-  { href: '/dashboard/api', icon: Key, label: 'API Key' },
   { href: '/dashboard/settings', icon: Settings, label: 'Cài đặt' },
   { href: '/dashboard/support', icon: HelpCircle, label: 'Hỗ trợ' },
 ]
@@ -87,7 +85,7 @@ export default function DashboardSidebar({ user }: SidebarProps) {
 
         {/* Logo */}
         <div className="p-6 border-b border-blue-200/50 dark:border-blue-700/50">
-          <Link href="/dashboard" className="flex items-center gap-3 group">
+          <Link href="/dashboard/rent" className="flex items-center gap-3 group">
             <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-sm transition-all">
               <span className="text-white font-bold text-2xl">O</span>
             </div>
@@ -121,8 +119,7 @@ export default function DashboardSidebar({ user }: SidebarProps) {
         {/* Menu */}
         <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
           {menuItems.map((item) => {
-            const isActive = pathname === item.href || 
-              (item.href !== '/dashboard' && pathname.startsWith(item.href))
+            const isActive = pathname === item.href || pathname.startsWith(item.href)
             
             return (
               <Link
