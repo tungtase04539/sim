@@ -20,23 +20,27 @@ export function useTheme() {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  // Default theme for SSR - will be updated on client mount
   const [theme, setTheme] = useState<Theme>('light')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    const savedTheme = localStorage.getItem('theme') as Theme
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
-    if (savedTheme) {
-      setTheme(savedTheme)
-    } else if (prefersDark) {
-      setTheme('dark')
+    // Only access browser APIs after mounting
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as Theme
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      
+      if (savedTheme) {
+        setTheme(savedTheme)
+      } else if (prefersDark) {
+        setTheme('dark')
+      }
     }
   }, [])
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && typeof window !== 'undefined') {
       document.documentElement.classList.toggle('dark', theme === 'dark')
       localStorage.setItem('theme', theme)
     }
@@ -46,11 +50,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
 
+  // Always provide theme context, even during SSR
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <div className={mounted ? '' : 'opacity-0'}>
-        {children}
-      </div>
+      {children}
     </ThemeContext.Provider>
   )
 }
