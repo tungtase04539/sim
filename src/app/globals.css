@@ -50,11 +50,9 @@
   --color-dark-900: var(--dark-900);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
@@ -72,11 +70,9 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background: linear-gradient(135deg, #0c4a6e 0%, #075985 25%, #0369a1 50%, #0284c7 75%, #0ea5e9 100%);
-    background-size: 400% 400%;
-  }
+.dark body {
+  background: linear-gradient(135deg, #0c4a6e 0%, #075985 25%, #0369a1 50%, #0284c7 75%, #0ea5e9 100%);
+  background-size: 400% 400%;
 }
 
 /* Modern 2D Minimal Utility Classes */
@@ -123,10 +119,8 @@ body {
   background: white;
 }
 
-@media (prefers-color-scheme: dark) {
-  .input-field:focus {
-    background: var(--dark-800);
-  }
+.dark .input-field:focus {
+  background: var(--dark-800);
 }
 
 .card-hover {

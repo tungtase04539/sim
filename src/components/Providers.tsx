@@ -48,10 +48,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const root = document.documentElement
+      // Force remove and add to ensure it works
+      root.classList.remove('dark', 'light')
       if (theme === 'dark') {
         root.classList.add('dark')
       } else {
-        root.classList.remove('dark')
+        root.classList.add('light')
       }
       if (mounted) {
         localStorage.setItem('theme', theme)
