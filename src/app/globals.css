@@ -3,6 +3,23 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Primary colors */
+  --primary-50: #f0f9ff;
+  --primary-100: #e0f2fe;
+  --primary-600: #0284c7;
+  --primary-700: #0369a1;
+  
+  /* Dark colors */
+  --dark-50: #f9fafb;
+  --dark-100: #f3f4f6;
+  --dark-200: #e5e7eb;
+  --dark-300: #d1d5db;
+  --dark-400: #9ca3af;
+  --dark-600: #4b5563;
+  --dark-700: #374151;
+  --dark-800: #1f2937;
+  --dark-900: #111827;
 }
 
 @theme inline {
@@ -10,6 +27,23 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Primary colors */
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  
+  /* Dark colors */
+  --color-dark-50: var(--dark-50);
+  --color-dark-100: var(--dark-100);
+  --color-dark-200: var(--dark-200);
+  --color-dark-300: var(--dark-300);
+  --color-dark-400: var(--dark-400);
+  --color-dark-600: var(--dark-600);
+  --color-dark-700: var(--dark-700);
+  --color-dark-800: var(--dark-800);
+  --color-dark-900: var(--dark-900);
 }
 
 @media (prefers-color-scheme: dark) {
