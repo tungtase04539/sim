@@ -225,7 +225,7 @@ export default function RentOTPPage() {
 
           {/* Operator */}
           <div>
-            <label className="block text-xs font-semibold text-white/90 mb-3 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">
               Operator
             </label>
             <select className="input-field">
@@ -235,7 +235,7 @@ export default function RentOTPPage() {
 
           {/* Service */}
           <div>
-            <label className="block text-xs font-semibold text-white/90 mb-3 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wider">
               Service
             </label>
             <select
@@ -280,12 +280,12 @@ export default function RentOTPPage() {
       {/* My Orders */}
       <div className="glass-card-strong overflow-hidden">
         <div className="p-5 bg-gradient-to-r from-primary-600 to-blue-600 text-white flex items-center justify-between">
-          <h2 className="font-semibold flex items-center gap-2 text-base">
+          <h2 className="font-bold flex items-center gap-2 text-base">
             MY ORDERS ({orders.length})
           </h2>
           <button 
             onClick={fetchOrders} 
-            className="flex items-center gap-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-all"
+            className="btn-secondary flex items-center gap-2 text-white border-white/30 hover:border-white/50"
           >
             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
             Refresh
@@ -295,10 +295,10 @@ export default function RentOTPPage() {
         {isLoading ? (
           <div className="p-16 text-center">
             <Loader2 className="w-10 h-10 mx-auto mb-4 animate-spin text-primary-500" />
-            <p className="text-dark-500 dark:text-dark-400 text-sm">Đang tải lịch sử...</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Đang tải lịch sử...</p>
           </div>
         ) : orders.length === 0 ? (
-          <div className="p-16 text-center text-dark-400">
+          <div className="p-16 text-center text-gray-600 dark:text-gray-400">
             <Phone className="w-16 h-16 mx-auto mb-4 opacity-30" />
             <p className="font-medium mb-1">Chưa có đơn hàng nào</p>
             <p className="text-sm">Chọn dịch vụ và quốc gia để bắt đầu thuê OTP</p>
@@ -306,31 +306,31 @@ export default function RentOTPPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-dark-50 to-dark-100 dark:from-dark-800 dark:to-dark-700">
+              <thead className="bg-blue-50/50 dark:bg-blue-900/20">
                 <tr>
-                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Code</th>
-                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Date</th>
-                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Service</th>
-                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Phone</th>
-                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">OTP</th>
-                  <th className="text-left px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Message</th>
-                  <th className="text-right px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Price</th>
-                  <th className="text-center px-5 py-4 text-xs font-semibold text-dark-600 dark:text-dark-400 uppercase tracking-wide">Status</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Code</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Date</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Service</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Phone</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">OTP</th>
+                  <th className="text-left px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Message</th>
+                  <th className="text-right px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Price</th>
+                  <th className="text-center px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((order, idx) => (
                   <tr key={order.id} className={cn(
-                    "border-b border-dark-200/50 dark:border-dark-700/50 hover:bg-dark-50/50 dark:hover:bg-dark-800/30 transition-colors",
+                    "border-b border-blue-200/50 dark:border-blue-700/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors",
                     getStatusBgColor(order.status),
                     idx % 2 === 0 && "bg-dark-50/20 dark:bg-dark-800/10"
                   )}>
-                    <td className="px-5 py-4 font-mono text-xs font-medium text-dark-700 dark:text-dark-300">{order.code}</td>
-                    <td className="px-5 py-4 text-xs text-dark-500 dark:text-dark-400">
+                    <td className="px-5 py-4 font-mono text-xs font-medium text-gray-900 dark:text-white">{order.code}</td>
+                    <td className="px-5 py-4 text-xs text-gray-600 dark:text-gray-400">
                       {new Date(order.created_at).toLocaleString('vi-VN')}
                     </td>
                     <td className="px-5 py-4">
-                      <span className="font-medium text-sm text-dark-900 dark:text-white">{order.service}</span>
+                      <span className="font-semibold text-sm text-gray-900 dark:text-white">{order.service}</span>
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
@@ -364,10 +364,10 @@ export default function RentOTPPage() {
                           Waiting...
                         </span>
                       ) : (
-                        <span className="text-dark-400 text-xs">-</span>
+                        <span className="text-gray-400 text-xs">-</span>
                       )}
                     </td>
-                    <td className="px-5 py-4 text-xs text-dark-600 dark:text-dark-400 max-w-xs truncate">
+                    <td className="px-5 py-4 text-xs text-gray-600 dark:text-gray-400 max-w-xs truncate">
                       {order.sms_content || '-'}
                     </td>
                     <td className="px-5 py-4 text-right font-semibold text-primary-600 dark:text-primary-400 text-sm">

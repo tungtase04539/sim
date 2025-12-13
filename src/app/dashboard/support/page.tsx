@@ -3,13 +3,15 @@ import Link from 'next/link'
 
 export default function SupportPage() {
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold text-dark-900 dark:text-white flex items-center gap-3 mb-2">
-          <MessageCircle className="w-8 h-8 text-primary-500" />
+        <h1 className="text-4xl font-bold text-primary-700 dark:text-primary-300 flex items-center gap-4 mb-3">
+          <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
+            <MessageCircle className="w-6 h-6 text-white" />
+          </div>
           Hỗ trợ
         </h1>
-        <p className="text-dark-500 dark:text-dark-400">
+        <p className="text-gray-700 dark:text-gray-300 text-lg">
           Liên hệ với chúng tôi nếu bạn cần giúp đỡ
         </p>
       </div>
@@ -20,15 +22,15 @@ export default function SupportPage() {
           href="https://t.me/otpresale"
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border-2 border-dark-200/50 dark:border-dark-700/50 p-6 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-600 transition-all group"
+          className="glass-card-strong p-6 hover:shadow-lg hover:border-primary-400 dark:hover:border-primary-600 transition-all group"
         >
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md">
+          <div className="w-12 h-12 rounded-md bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-4 transition-transform shadow-sm">
             <MessageCircle className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-lg font-semibold text-dark-900 dark:text-white mb-2">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
             Telegram
           </h2>
-          <p className="text-sm text-dark-600 dark:text-dark-400 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Chat trực tiếp với đội ngũ hỗ trợ qua Telegram. Phản hồi nhanh nhất!
           </p>
           <span className="text-primary-600 dark:text-primary-400 font-medium flex items-center gap-2 text-sm">
@@ -40,15 +42,15 @@ export default function SupportPage() {
         {/* Email */}
         <a
           href="mailto:support@otpresale.com"
-          className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border-2 border-dark-200/50 dark:border-dark-700/50 p-6 hover:shadow-lg hover:border-red-400 dark:hover:border-red-600 transition-all group"
+          className="glass-card-strong p-6 hover:shadow-lg hover:border-red-400 dark:hover:border-red-600 transition-all group"
         >
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md">
+          <div className="w-12 h-12 rounded-md bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center mb-4 transition-transform shadow-sm">
             <Mail className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-lg font-semibold text-dark-900 dark:text-white mb-2">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
             Email
           </h2>
-          <p className="text-sm text-dark-600 dark:text-dark-400 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Gửi email cho chúng tôi. Phản hồi trong vòng 24 giờ.
           </p>
           <span className="text-primary-600 dark:text-primary-400 font-medium text-sm">
@@ -58,8 +60,8 @@ export default function SupportPage() {
       </div>
 
       {/* FAQ */}
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 p-6">
-        <h2 className="text-lg font-semibold text-dark-900 dark:text-white mb-5">
+      <div className="glass-card-strong p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
           Câu hỏi thường gặp
         </h2>
         
@@ -83,11 +85,11 @@ export default function SupportPage() {
             },
           ].map((item, i) => (
             <details key={i} className="group">
-              <summary className="flex items-center justify-between cursor-pointer p-4 rounded-xl bg-gradient-to-r from-dark-50 to-dark-100 dark:from-dark-700 dark:to-dark-800 hover:from-dark-100 dark:hover:from-dark-700 border border-dark-200/50 dark:border-dark-700/50 transition-all">
-                <span className="font-medium text-sm text-dark-900 dark:text-white">{item.q}</span>
+              <summary className="flex items-center justify-between cursor-pointer p-4 rounded-md bg-blue-50/50 dark:bg-blue-900/20 hover:bg-blue-100/50 dark:hover:bg-blue-900/30 border border-blue-200/50 dark:border-blue-700/50 transition-all">
+                <span className="font-semibold text-sm text-gray-900 dark:text-white">{item.q}</span>
                 <span className="text-xl text-primary-600 dark:text-primary-400 group-open:rotate-45 transition-transform">+</span>
               </summary>
-              <p className="p-4 text-sm text-dark-600 dark:text-dark-400 bg-dark-50/50 dark:bg-dark-700/30 rounded-b-xl">
+              <p className="p-4 text-sm text-gray-700 dark:text-gray-300 bg-white/50 dark:bg-dark-800/50 rounded-b-md">
                 {item.a}
               </p>
             </details>
@@ -96,14 +98,14 @@ export default function SupportPage() {
       </div>
 
       {/* Working Hours */}
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border-2 border-green-200 dark:border-green-800 p-5">
+      <div className="glass-card-strong p-6 bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-200/50 dark:border-green-700/50">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center shadow-md">
+          <div className="w-12 h-12 rounded-md bg-green-100 dark:bg-green-900/30 flex items-center justify-center shadow-sm">
             <Clock className="w-6 h-6 text-green-600 dark:text-green-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-dark-900 dark:text-white text-base">Hỗ trợ 24/7</h3>
-            <p className="text-sm text-dark-600 dark:text-dark-400">
+            <h3 className="font-bold text-gray-900 dark:text-white text-base">Hỗ trợ 24/7</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Đội ngũ hỗ trợ luôn sẵn sàng phục vụ bạn mọi lúc
             </p>
           </div>

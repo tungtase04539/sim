@@ -121,13 +121,15 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold text-dark-900 dark:text-white flex items-center gap-3 mb-2">
-          <Settings className="w-8 h-8 text-primary-500" />
+        <h1 className="text-4xl font-bold text-primary-700 dark:text-primary-300 flex items-center gap-4 mb-3">
+          <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary-500 via-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
+            <Settings className="w-6 h-6 text-white" />
+          </div>
           Cài đặt
         </h1>
-        <p className="text-dark-500 dark:text-dark-400">
+        <p className="text-gray-700 dark:text-gray-300 text-lg">
           Quản lý thông tin tài khoản của bạn
         </p>
       </div>
@@ -135,7 +137,7 @@ export default function SettingsPage() {
       {/* Message */}
       {message && (
         <div className={cn(
-          "p-4 rounded-xl flex items-center gap-3 shadow-sm border",
+          "p-4 rounded-md flex items-center gap-3 shadow-sm border",
           message.type === 'success' 
             ? "bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
             : "bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
@@ -145,9 +147,9 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="bg-white dark:bg-dark-800 rounded-2xl shadow-sm border border-dark-200/50 dark:border-dark-700/50 overflow-hidden">
+      <div className="glass-card-strong overflow-hidden">
         {/* Tabs */}
-        <div className="flex border-b border-dark-200 dark:border-dark-700 bg-dark-50/50 dark:bg-dark-800/50">
+        <div className="flex border-b border-blue-200/50 dark:border-blue-700/50 bg-blue-50/50 dark:bg-blue-900/20">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -155,8 +157,8 @@ export default function SettingsPage() {
               className={cn(
                 "flex items-center gap-2 px-6 py-4 font-medium transition-all text-sm",
                 activeTab === tab.id
-                  ? "text-primary-600 dark:text-primary-400 border-b-2 border-primary-500 bg-white dark:bg-dark-800"
-                  : "text-dark-500 dark:text-dark-400 hover:text-dark-700 dark:hover:text-dark-300 hover:bg-dark-100/50 dark:hover:bg-dark-700/50"
+                  ? "text-primary-700 dark:text-primary-300 border-b-2 border-primary-500 bg-white dark:bg-dark-800"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
               )}
             >
               <tab.icon className="w-4 h-4" />
@@ -177,7 +179,7 @@ export default function SettingsPage() {
                   type="text"
                   value={profile.full_name}
                   onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  className="input-field"
                 />
               </div>
 
@@ -189,7 +191,7 @@ export default function SettingsPage() {
                   type="email"
                   value={profile.email}
                   disabled
-                  className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-dark-100 dark:bg-dark-700 cursor-not-allowed text-dark-500"
+                  className="input-field cursor-not-allowed opacity-60"
                 />
                 <p className="text-xs text-dark-500 dark:text-dark-400 mt-2">Email không thể thay đổi</p>
               </div>
@@ -197,7 +199,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleSaveProfile}
                 disabled={isLoading}
-                className="bg-gradient-to-r from-primary-600 to-blue-600 hover:from-primary-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="btn-primary flex items-center gap-2"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 Lưu thay đổi
@@ -219,7 +221,7 @@ export default function SettingsPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={password.current}
                     onChange={(e) => setPassword({ ...password, current: e.target.value })}
-                    className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                    className="input-field pr-12"
                   />
                   <button
                     type="button"
@@ -239,7 +241,7 @@ export default function SettingsPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password.new}
                   onChange={(e) => setPassword({ ...password, new: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  className="input-field"
                 />
               </div>
 
@@ -251,14 +253,14 @@ export default function SettingsPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password.confirm}
                   onChange={(e) => setPassword({ ...password, confirm: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-dark-200 dark:border-dark-700 bg-white dark:bg-dark-800 text-dark-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  className="input-field"
                 />
               </div>
 
               <button
                 onClick={handleChangePassword}
                 disabled={isLoading || !password.current || !password.new}
-                className="bg-gradient-to-r from-primary-600 to-blue-600 hover:from-primary-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="btn-primary flex items-center gap-2"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
                 Đổi mật khẩu
@@ -276,7 +278,7 @@ export default function SettingsPage() {
                 { id: 'email_order', label: 'Thông báo đơn hàng qua Email', checked: true },
                 { id: 'telegram', label: 'Nhận thông báo qua Telegram', checked: false },
               ].map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-dark-50 to-dark-100 dark:from-dark-700 dark:to-dark-800 border border-dark-200 dark:border-dark-700">
+                <div key={item.id} className="flex items-center justify-between p-4 rounded-md bg-blue-50/50 dark:bg-blue-900/20 border border-blue-200/50 dark:border-blue-700/50">
                   <span className="text-sm font-medium text-dark-700 dark:text-dark-300">{item.label}</span>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" defaultChecked={item.checked} className="sr-only peer" />
