@@ -91,21 +91,48 @@ export function verifySePaySignature(
 }
 
 // Parse payment code from transaction content
+// Improved pattern matching for various formats
 export function parsePaymentCode(content: string): string | null {
-  // Look for pattern like "OTP" followed by alphanumeric code
-  const patterns = [
-    /OTP[A-Z0-9]{8,}/i,
-    /MA\s*TT\s*:?\s*([A-Z0-9]+)/i,
-    /NAP\s*:?\s*([A-Z0-9]+)/i,
-  ]
-
-  for (const pattern of patterns) {
-    const match = content.match(pattern)
-    if (match) {
-      return match[0].replace(/\s+/g, '').toUpperCase()
-    }
+  if (!content) return null
+  
+  // Normalize: uppercase, remove extra spaces and special chars that might interfere
+  const normalized = content.toUpperCase().trim()
+  
+  // Pattern 1: OTP followed by alphanumeric (OTPxxxxx or OTP xxxxx)
+  const pattern1 = /OTP\s*([A-Z0-9]{4,10})/i
+  const match1 = normalized.match(pattern1)
+  if (match1) {
+    return 'OTP' + match1[1].replace(/\s+/g, '')
   }
-
+  
+  // Pattern 2: OTPxxxxx (no space, direct)
+  const pattern2 = /OTP[A-Z0-9]{4,10}/i
+  const match2 = normalized.match(pattern2)
+  if (match2) {
+    return match2[0].replace(/\s+/g, '')
+  }
+  
+  // Pattern 3: ND: OTPxxxxx or NOI DUNG: OTPxxxxx
+  const pattern3 = /(?:ND|NOI\s*DUNG)\s*:?\s*(OTP[A-Z0-9]+)/i
+  const match3 = normalized.match(pattern3)
+  if (match3) {
+    return match3[1].replace(/\s+/g, '')
+  }
+  
+  // Pattern 4: MA TT: OTPxxxxx
+  const pattern4 = /MA\s*TT\s*:?\s*(OTP[A-Z0-9]+)/i
+  const match4 = normalized.match(pattern4)
+  if (match4) {
+    return match4[1].replace(/\s+/g, '')
+  }
+  
+  // Pattern 5: Just look for OTP anywhere followed by alphanumeric
+  const pattern5 = /OTP[A-Z0-9]+/i
+  const match5 = normalized.match(pattern5)
+  if (match5) {
+    return match5[0].replace(/\s+/g, '').toUpperCase()
+  }
+  
   return null
 }
 
@@ -115,53 +142,119 @@ export async function getSePayTransactions(
   toDate?: string
 ): Promise<SePayTransaction[]> {
   if (!SEPAY_API_KEY) {
-    throw new Error('SePay API key not configured')
+    console.log('[SePay] API key not configured')
+    return []
   }
 
-  const params = new URLSearchParams()
-  if (fromDate) params.append('fromDate', fromDate)
-  if (toDate) params.append('toDate', toDate)
-
-  const response = await fetch(
-    `https://my.sepay.vn/userapi/transactions/list?${params.toString()}`,
-    {
-      headers: {
-        'Authorization': `Bearer ${SEPAY_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+  try {
+    const params = new URLSearchParams()
+    // Get transactions from last 24 hours by default
+    if (!fromDate) {
+      const yesterday = new Date()
+      yesterday.setDate(yesterday.getDate() - 1)
+      params.append('fromDate', yesterday.toISOString().split('T')[0])
+    } else {
+      params.append('fromDate', fromDate)
     }
-  )
+    
+    if (toDate) {
+      params.append('toDate', toDate)
+    }
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch SePay transactions')
+    console.log('[SePay] Fetching transactions...')
+    
+    const response = await fetch(
+      `https://my.sepay.vn/userapi/transactions/list?${params.toString()}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${SEPAY_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store',
+        next: { revalidate: 0 },
+      }
+    )
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('[SePay] API error:', response.status, errorText)
+      throw new Error(`SePay API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const transactions = data.transactions || data.data || []
+    console.log(`[SePay] Found ${transactions.length} transactions`)
+    
+    return transactions
+  } catch (error: any) {
+    console.error('[SePay] Error fetching transactions:', error.message)
+    return []
   }
-
-  const data = await response.json()
-  return data.transactions || []
 }
 
 // Check for matching deposit
 export async function checkDeposit(
   paymentCode: string,
   expectedAmount: number
-): Promise<{ found: boolean; transaction?: SePayTransaction }> {
+): Promise<{ found: boolean; transaction?: SePayTransaction; error?: string }> {
   try {
+    console.log(`[SePay] Checking deposit - Code: ${paymentCode}, Amount: ${expectedAmount}`)
+    
+    if (!SEPAY_API_KEY) {
+      console.log('[SePay] API key not configured, cannot check')
+      return { found: false, error: 'SePay chưa được cấu hình' }
+    }
+    
     const transactions = await getSePayTransactions()
     
+    if (transactions.length === 0) {
+      console.log('[SePay] No transactions found')
+      return { found: false, error: 'Không tìm thấy giao dịch nào' }
+    }
+    
+    // Normalize payment code for comparison
+    const normalizedPaymentCode = paymentCode.toUpperCase().replace(/\s+/g, '')
+    
     for (const tx of transactions) {
-      if (tx.transferType !== 'in') continue
+      // Only check incoming transfers
+      if (tx.transferType !== 'in') {
+        continue
+      }
       
+      // Parse payment code from transaction content
       const txCode = parsePaymentCode(tx.transactionContent)
       
-      if (txCode === paymentCode && tx.transferAmount >= expectedAmount) {
-        return { found: true, transaction: tx }
+      console.log(`[SePay] Transaction ${tx.referenceNumber}:`)
+      console.log(`  - Content: "${tx.transactionContent}"`)
+      console.log(`  - Parsed code: ${txCode}`)
+      console.log(`  - Amount: ${tx.transferAmount}`)
+      
+      if (!txCode) {
+        continue
+      }
+      
+      // Normalize and compare codes
+      const normalizedTxCode = txCode.toUpperCase().replace(/\s+/g, '')
+      
+      if (normalizedTxCode === normalizedPaymentCode) {
+        // Check if amount matches (allow 1% tolerance for fees)
+        const tolerance = expectedAmount * 0.01
+        const minAmount = expectedAmount - tolerance
+        
+        if (tx.transferAmount >= minAmount) {
+          console.log(`[SePay] ✅ Found matching transaction: ${tx.referenceNumber}`)
+          return { found: true, transaction: tx }
+        } else {
+          console.log(`[SePay] ⚠️ Code matches but amount too low: ${tx.transferAmount} < ${minAmount}`)
+        }
       }
     }
     
+    console.log('[SePay] ❌ No matching transaction found')
     return { found: false }
-  } catch (error) {
-    console.error('Error checking deposit:', error)
-    return { found: false }
+  } catch (error: any) {
+    console.error('[SePay] Error checking deposit:', error)
+    return { found: false, error: error.message || 'Lỗi khi kiểm tra giao dịch' }
   }
 }
 
