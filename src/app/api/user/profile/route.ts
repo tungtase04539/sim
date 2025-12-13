@@ -34,6 +34,46 @@ export async function GET(request: NextRequest) {
   }
 }
 
+export async function POST(request: NextRequest) {
+  try {
+    // Allow creating profile for new users (called from register page)
+    const { user_id, email, full_name } = await request.json()
+    
+    if (!user_id || !email) {
+      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 })
+    }
+
+    // Use service role to create profile
+    const { createServiceRoleClient } = await import('@/lib/supabase/server')
+    const supabase = await createServiceRoleClient()
+
+    const { error } = await supabase
+      .from('profiles')
+      .upsert({
+        id: user_id,
+        email: email,
+        full_name: full_name || email.split('@')[0],
+        balance: 0,
+        role: 'user',
+        updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'id',
+        ignoreDuplicates: false,
+      })
+
+    if (error) {
+      console.error('Profile creation error:', error)
+      return NextResponse.json({ success: false, error: 'Failed to create profile' }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true })
+
+  } catch (error) {
+    console.error('Profile creation error:', error)
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 export async function PUT(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient()

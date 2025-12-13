@@ -134,10 +134,14 @@ export async function POST(request: NextRequest) {
     })
 
     // Create OTP order in database
+    // Note: service_id and country_id are stored in external_order_id as JSON
+    // If your schema requires these fields, add them here
     const { data: order, error: orderError } = await adminSupabase
       .from('otp_orders')
       .insert({
         user_id: user.id,
+        service_id: service_id, // Add if schema requires
+        country_id: country_id, // Add if schema requires
         phone_number: phoneNumber,
         otp_code: otp,
         price: price,

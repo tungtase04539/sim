@@ -92,20 +92,55 @@ export function verifySePaySignature(
 
 // Parse payment code from transaction content
 export function parsePaymentCode(content: string): string | null {
+  if (!content || typeof content !== 'string') {
+    return null
+  }
+
+  // Normalize content: remove extra spaces, convert to uppercase
+  const normalized = content.trim().toUpperCase()
+  
   // Look for pattern like "OTP" followed by alphanumeric code
+  // Patterns to try (in order of specificity):
   const patterns = [
-    /OTP[A-Z0-9]{8,}/i,
-    /MA\s*TT\s*:?\s*([A-Z0-9]+)/i,
-    /NAP\s*:?\s*([A-Z0-9]+)/i,
+    // Exact match: OTP followed by alphanumeric (8+ chars)
+    /OTP[A-Z0-9]{8,}/,
+    // OTP with spaces: OTP ABC123XYZ
+    /OTP\s+([A-Z0-9]{8,})/,
+    // MA TT: OTPCODE or NAP: OTPCODE
+    /(?:MA\s*TT|NAP)\s*:?\s*(OTP[A-Z0-9]{8,})/i,
+    // Just OTP code without prefix
+    /^OTP[A-Z0-9]{8,}$/,
+    // Any alphanumeric code that starts with OTP
+    /\b(OTP[A-Z0-9]{6,})\b/,
+    // Try to extract any code that looks like payment code (alphanumeric, 8+ chars)
+    /\b([A-Z0-9]{10,})\b/,
   ]
 
   for (const pattern of patterns) {
-    const match = content.match(pattern)
+    const match = normalized.match(pattern)
     if (match) {
-      return match[0].replace(/\s+/g, '').toUpperCase()
+      // Extract the code (use first capture group if available, otherwise use full match)
+      const code = match[1] || match[0]
+      if (code) {
+        const cleaned = code.replace(/\s+/g, '').toUpperCase()
+        // Validate: should start with OTP and be at least 8 chars
+        if (cleaned.startsWith('OTP') && cleaned.length >= 11) {
+          console.log(`[parsePaymentCode] Found code: ${cleaned} from content: "${content}"`)
+          return cleaned
+        }
+      }
     }
   }
 
+  // If no pattern matched, try to find any OTP-like code
+  const otpMatch = normalized.match(/OTP[A-Z0-9]+/i)
+  if (otpMatch) {
+    const code = otpMatch[0].replace(/\s+/g, '').toUpperCase()
+    console.log(`[parsePaymentCode] Found OTP code (loose match): ${code} from content: "${content}"`)
+    return code
+  }
+
+  console.log(`[parsePaymentCode] No payment code found in content: "${content}"`)
   return null
 }
 
@@ -166,20 +201,35 @@ export async function checkDeposit(
 }
 
 // Process webhook from SePay
-export function processSePayWebhook(payload: SePayWebhookPayload): {
+export function processSePayWebhook(payload: SePayWebhookPayload | any): {
   isDeposit: boolean
   paymentCode: string | null
   amount: number
   referenceNumber: string
 } {
-  const isDeposit = payload.transferType === 'in'
-  const paymentCode = parsePaymentCode(payload.transactionContent)
+  // Handle different payload formats
+  const transferType = payload.transferType || payload.transfer_type || payload.type
+  const transactionContent = payload.transactionContent || payload.transaction_content || payload.content || payload.description || ''
+  const transferAmount = payload.transferAmount || payload.transfer_amount || payload.amount || 0
+  const referenceNumber = payload.referenceNumber || payload.reference_number || payload.id?.toString() || payload.transaction_id || ''
+
+  const isDeposit = transferType === 'in' || transferType === 'IN' || transferType === 1
+  
+  console.log('[processSePayWebhook] Processing payload:', {
+    transferType,
+    transactionContent,
+    transferAmount,
+    referenceNumber,
+    isDeposit
+  })
+  
+  const paymentCode = parsePaymentCode(transactionContent)
   
   return {
     isDeposit,
     paymentCode,
-    amount: payload.transferAmount,
-    referenceNumber: payload.referenceNumber,
+    amount: Number(transferAmount),
+    referenceNumber: String(referenceNumber),
   }
 }
 

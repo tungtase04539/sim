@@ -33,16 +33,50 @@ export default async function DashboardLayout({
 
   const { user, profile } = userData
 
-  // If no profile exists, create one
+  // If no profile exists, create one using service role
   if (!profile) {
-    const supabase = await createServerSupabaseClient()
-    await supabase.from('profiles').insert({
-      id: user.id,
-      email: user.email,
-      full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-      balance: 0,
-      role: 'user',
-    })
+    try {
+      const { createServiceRoleClient } = await import('@/lib/supabase/server')
+      const adminSupabase = await createServiceRoleClient()
+      
+      const { error: insertError } = await adminSupabase.from('profiles').insert({
+        id: user.id,
+        email: user.email || '',
+        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+        balance: 0,
+        role: 'user',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+
+      if (insertError) {
+        console.error('Failed to create profile:', insertError)
+        // Try to fetch again after insert
+        const { data: newProfile } = await adminSupabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        
+        if (newProfile) {
+          profile = newProfile
+        }
+      } else {
+        // Fetch the newly created profile
+        const { data: newProfile } = await adminSupabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        
+        if (newProfile) {
+          profile = newProfile
+        }
+      }
+    } catch (error) {
+      console.error('Error creating profile:', error)
+      // Continue with default profile
+    }
   }
 
   const displayUser = profile || {

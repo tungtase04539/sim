@@ -57,14 +57,26 @@ export default function RegisterPage() {
       }
 
       if (data.user) {
-        // Create profile
-        await supabase.from('profiles').upsert({
-          id: data.user.id,
-          email: email,
-          full_name: fullName,
-          balance: 0,
-          role: 'user',
-        })
+        // Create profile via API (uses service role)
+        try {
+          const profileRes = await fetch('/api/user/profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: data.user.id,
+              email: email,
+              full_name: fullName,
+            }),
+          })
+          
+          // Profile creation is optional - if it fails, dashboard layout will create it
+          if (!profileRes.ok) {
+            console.warn('Profile creation failed, will be created on first dashboard visit')
+          }
+        } catch (profileError) {
+          console.warn('Profile creation error:', profileError)
+          // Continue anyway - profile will be created in dashboard layout
+        }
 
         if (data.session) {
           // User is automatically logged in
